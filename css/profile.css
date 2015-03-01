@@ -28,7 +28,9 @@ body{
     height: 128px;
     border-radius: 64px; 
     opacity: 0.9; 
-    transition: 1s;
+    -webkit-transition: all 1s ease-in-out;
+    -moz-transition: all 1s ease-in-out;
+    -o-transition: all 1s ease-in-out;	
     background:  url(../img/circle128.png) 0 0;
 }
 .share-128:hover {
@@ -36,8 +38,15 @@ body{
     width: 128px;
     height: 128px;
     border-radius: 64px; 
-    opacity: 1; 
-    transition: 0.5s;
+    opacity: 1;
+    transform: translate(0,-350px);
+    -webkit-transform: translate(0,-20px);
+    -o-transform: translate(0,-20px);
+    -moz-transform: translate(0,-20px);
+
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;	
     box-shadow: 0 0 30px 15px #1ce1ba;
     background:  url(../img/circle128.png) 0 0;
 }
@@ -60,4 +69,23 @@ body{
 }
 .share-128.share-github {
     background-position: -383px -768px;
+}
+
+.object {
+/** This css rule will make the object 
+move smoothly and animated **/
+	-webkit-transition: all 2s ease-in-out;
+    -moz-transition: all 2s ease-in-out;
+    -o-transition: all 2s ease-in-out;	    
+}
+.object:hover {
+/** This css rule will make the object 
+move smoothly and animated **/
+	-webkit-transition: all 2s ease-in-out;
+    -moz-transition: all 2s ease-in-out;
+    -o-transition: all 2s ease-in-out;	
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -moz-transform: rotate(360deg); 
 }
