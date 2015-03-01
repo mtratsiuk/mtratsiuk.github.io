@@ -1,7 +1,13 @@
-.profile-info {
-    padding-top: 250px;
+.profile-info {    
+    padding-top: 30px;
     text-align: center;
     padding-bottom: 100px;
+}
+
+@media (min-width:768px) {
+    .profile-info {
+        padding-top: 250px;
+    }
 }
 
 .share {
