@@ -1,0 +1,54 @@
+.profile-info {
+    padding-top: 250px;
+    text-align: center;
+    padding-bottom: 100px;
+}
+
+.share {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+body{
+    background: linear-gradient(to right, #1abc9c, #0a7661);
+    font-family: 'Open Sans', sans-serif;       
+}
+
+.share-128 {
+    display: block;
+    width: 128px;
+    height: 128px;
+    border-radius: 64px; 
+    opacity: 0.9; 
+    background:  url(../img/circle128.png) 0 0;
+}
+.share-128:hover {
+    display: block;
+    width: 128px;
+    height: 128px;
+    border-radius: 64px; 
+    opacity: 1; 
+    transition: 0.5s;
+    box-shadow: 0 0 30px 15px #1ce1ba;
+    background:  url(../img/circle128.png) 0 0;
+}
+
+.share-128.share-twitter {
+    background-position: -128px -256px;    
+}
+.share-128.share-twitter:hover {
+    background-position: -128px -256px;    
+}
+
+.share-128.share-fb {
+    background-position: 0px -256px;
+}
+.share-128.share-vk {
+    background-position: -128px -1024px;
+}
+.share-128.share-instagram {
+    background-position: -256px -512px;
+}
+.share-128.share-github {
+    background-position: -383px -768px;
+}
