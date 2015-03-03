@@ -39,7 +39,7 @@ body{
     height: 128px;
     border-radius: 64px; 
     opacity: 1;
-    transform: translate(0,-350px);
+    transform: translate(0,-20px);
     -webkit-transform: translate(0,-20px);
     -o-transform: translate(0,-20px);
     -moz-transform: translate(0,-20px);
@@ -52,9 +52,6 @@ body{
 }
 
 .share-128.share-twitter {
-    background-position: -128px -256px;    
-}
-.share-128.share-twitter:hover {
     background-position: -128px -256px;    
 }
 
