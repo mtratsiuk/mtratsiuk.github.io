@@ -6,14 +6,9 @@
 
 @media (min-width:768px) {
     .profile-info {
-        padding-top: 250px;
-        padding-bottom: 100px;
+        padding-top: 100px;
+        padding-bottom: 75px;
     }
-}
-
-.share {
-    padding-top: 20px;
-    padding-bottom: 20px;
 }
 
 body{
