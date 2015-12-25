@@ -1,0 +1,98 @@
+$desktop: 'only screen and (min-width: 1200px)';
+
+@mixin scaling-animation($name, $max-scale) {
+	@keyframes #{$name} {
+		0% { transform: scale(1, 1); }
+		25% { transform: scale($max-scale, $max-scale); }
+		50% { transform: scale(1, 1); }
+		75% { transform: scale($max-scale, $max-scale); }
+		100% { transform: scale(1, 1); }
+	}
+}
+
+@include scaling-animation(scaling, 1.15);
+.scaling {
+		animation: scaling 64s linear infinite;
+	}
+
+@keyframes rotation {
+	 100% { transform: rotate(359deg); }
+}
+	
+.rotating {
+	animation: rotation 256s ease-in-out infinite;
+}
+
+html {
+	height: 100%;
+	font-family: 'Titillium Web', sans-serif;
+	color: rgba(63, 62, 90, 0.9)
+}
+
+body {
+	height: 100%;
+	background: linear-gradient(135deg, #EEF1F0, #CEF2E7 20%, #A5E9D4 50%, #2CC395);
+}
+
+.content {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+}
+
+.content-item {
+	margin-top: 1rem;
+}
+
+.profile-image {
+	background-image: url('../img/profile.jpg');
+	width: 45vw;
+	max-width: 200px;
+	background-position: center;
+	background-size: cover;
+	border-radius: 50%;
+	
+	&:before {
+		content: '';
+		padding-top: 100%;
+		display: inline-block;
+	}
+}
+
+.profile-info {
+	display: flex;
+    align-items: center;
+    flex-direction: column;
+	
+	.name {
+		font-size: 1.7rem;
+	}
+
+	.from {
+		font-size: 1.2rem;
+	}
+}
+
+.social-buttons {
+	font-size: 10vw;	
+	
+	a {
+		text-decoration: none;
+		color: inherit;
+	}
+	
+	@media #{$desktop} {
+		font-size: 2.5rem;
+	}
+	
+	@include scaling-animation(scaling-social, 1.25);
+	
+	a:hover {
+		animation: scaling-social 8s ease-in-out infinite;
+		
+		&:before {
+			transition: all 2s ease-in-out;
+			text-shadow: 3px 3px 10px rgba(127, 127, 127, 0.8);
+		}		
+	}
+}
