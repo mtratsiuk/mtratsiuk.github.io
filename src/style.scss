@@ -31,9 +31,9 @@ $color-gray: #37474F;
 }
 
 @mixin mask-icon($img-name, $color) {
-    mask: url($img-name) no-repeat 50% 50%;
-    mask-size: contain;
-    background-color: $color;
+    background-image: url($img-name);
+    background-repeat: no-repeat;
+    background-size: contain;
 }
 
 @include scaling-animation(scaling, 1.15);
