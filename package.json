@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "gulp build",
+    "serve": "gulp"
   },
   "devDependencies": {
     "browser-sync": "*",
@@ -32,7 +33,6 @@
   },
   "homepage": "https://github.com/mished/mished.github.io#readme",
   "dependencies": {
-    "normalize.css": "^3.0.3",
-    "streamqueue": "^1.1.1"
+    "normalize.css": "^3.0.3"
   }
 }
