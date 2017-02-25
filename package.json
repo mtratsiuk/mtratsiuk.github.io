@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "styles:dev": "lessc --source-map-less-inline ./src/styles/app.less ./build/bundle.css",
-    "styles:prod": "lessc --compress --autoprefix=\"last 2 versions\" ./src/styles/app.less ./build/bundle.css",
+    "styles:prod": "lessc --autoprefix=\"last 2 versions\" --clean-css=\"\" ./src/styles/app.less ./build/bundle.css",
     "html:dev": "cpx src/index.html ./build",
     "html:prod": "html-inline -i src/index.html -o build/index.html -b build",
     "scripts:dev": "mkdir -p build && uglifyjs src/scripts/app.js -o ./build/bundle.js --beautify",
@@ -34,6 +34,7 @@
     "html-inline": "^1.2.0",
     "less": "^2.7.1",
     "less-plugin-autoprefix": "^1.5.1",
+    "less-plugin-clean-css": "^1.5.1",
     "live-server": "^1.1.0",
     "npm-run-all": "^3.1.0",
     "onchange": "^3.0.2"
