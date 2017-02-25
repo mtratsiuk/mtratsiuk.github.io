@@ -1,38 +1,44 @@
 {
   "name": "mtratsiuk.github.io",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "scripts": {
-    "build": "gulp build",
-    "serve": "gulp"
-  },
-  "devDependencies": {
-    "browser-sync": "2.13.0",
-    "gulp": "3.9.1",
-    "gulp-autoprefixer": "3.1.0",
-    "gulp-concat": "2.6.0",
-    "gulp-minify-css": "1.2.4",
-    "gulp-minify-html": "1.0.6",
-    "gulp-rigger": "0.5.8",
-    "gulp-sass": "2.3.1",
-    "gulp-sequence": "0.4.4",
-    "gulp-sourcemaps": "1.6.0",
-    "gulp-uglify": "1.5.3",
-    "gulp-watch": "4.3.6",
-    "rimraf": "2.5.2",
-    "streamqueue": "1.1.1"
+    "styles:dev": "lessc --source-map-less-inline ./src/styles/app.less ./build/bundle.css",
+    "styles:prod": "lessc --compress --autoprefix=\"last 2 versions\" ./src/styles/app.less ./build/bundle.css",
+    "html:dev": "cpx src/index.html ./build",
+    "html:prod": "html-inline -i src/index.html -o build/index.html -b build",
+    "scripts:dev": "mkdir -p build && uglifyjs src/scripts/app.js -o ./build/bundle.js --beautify",
+    "scripts:prod": "mkdir -p build && uglifyjs src/scripts/app.js -o ./build/bundle.js",
+    "build:dev": "run-p styles:dev html:dev scripts:dev",
+    "build:prod": "run-s styles:prod scripts:prod html:prod",
+    "watch:styles": "onchange './src/styles/**/*.less' -- npm run styles:dev",
+    "watch:html": "onchange './src/index.html' -- npm run html:dev",
+    "watch:scripts": "onchange './src/scripts/**/*.js' -- npm run scripts:dev",
+    "watch:all": "run-p watch:styles watch:html watch:scripts live-server",
+    "live-server": "live-server build",
+    "serve-dev": "run-s build:dev watch:all",
+    "gh-deploy": "build:prod && git subtree push --prefix build origin gh-pages"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mtratsiuk/mtratsiuk.github.io.git"
   },
-  "author": "Mihail Trotsiuk (http://mtratsiuk.github.io)",
-  "license": "ISC",
+  "author": "Mihail Tratsiuk (http://mtratsiuk.github.io)",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/mtratsiuk/mtratsiuk.github.io/issues"
   },
   "homepage": "https://github.com/mtratsiuk/mtratsiuk.github.io#readme",
+  "devDependencies": {
+    "cpx": "^1.5.0",
+    "html-inline": "^1.2.0",
+    "less": "^2.7.1",
+    "less-plugin-autoprefix": "^1.5.1",
+    "live-server": "^1.1.0",
+    "npm-run-all": "^3.1.0",
+    "onchange": "^3.0.2"
+  },
   "dependencies": {
-    "normalize.css": "^3.0.3"
+    "normalize.css": "^5.0.0"
   }
 }
