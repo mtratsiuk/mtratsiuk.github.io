@@ -17,7 +17,7 @@
     "watch:all": "run-p watch:styles watch:html watch:scripts live-server",
     "live-server": "live-server build",
     "serve-dev": "run-s build:dev watch:all",
-    "gh-deploy": "build:prod && git subtree push --prefix build origin gh-pages"
+    "gh-deploy": "npm run build:prod && rm build/bundle.* && git add build/* && git commit -m 'Publish to gh-pages' && git subtree push --prefix build origin gh-pages"
   },
   "repository": {
     "type": "git",
