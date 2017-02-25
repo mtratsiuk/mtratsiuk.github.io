@@ -6,18 +6,17 @@
     "styles:dev": "lessc --source-map-less-inline ./src/styles/app.less ./build/bundle.css",
     "styles:prod": "lessc --autoprefix=\"last 2 versions\" --clean-css=\"\" ./src/styles/app.less ./build/bundle.css",
     "html:dev": "cpx src/index.html ./build",
-    "html:prod": "html-inline -i src/index.html -o build/index.html -b build",
+    "html:prod": "html-inline -i src/index.html -o index.html -b build",
     "scripts:dev": "mkdir -p build && uglifyjs src/scripts/app.js -o ./build/bundle.js --beautify",
     "scripts:prod": "mkdir -p build && uglifyjs src/scripts/app.js -o ./build/bundle.js",
     "build:dev": "run-p styles:dev html:dev scripts:dev",
-    "build:prod": "run-s styles:prod scripts:prod html:prod",
+    "build:prod": "run-s styles:prod scripts:prod html:prod && rm -rf build",
     "watch:styles": "onchange './src/styles/**/*.less' -- npm run styles:dev",
     "watch:html": "onchange './src/index.html' -- npm run html:dev",
     "watch:scripts": "onchange './src/scripts/**/*.js' -- npm run scripts:dev",
     "watch:all": "run-p watch:styles watch:html watch:scripts live-server",
     "live-server": "live-server build",
-    "serve-dev": "run-s build:dev watch:all",
-    "gh-deploy": "npm run build:prod && rm build/bundle.* && git add build/* && git commit -m 'Publish to gh-pages' && git subtree push --prefix build origin gh-pages"
+    "serve-dev": "run-s build:dev watch:all"
   },
   "repository": {
     "type": "git",
