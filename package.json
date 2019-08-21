@@ -36,7 +36,8 @@
     "less-plugin-clean-css": "^1.5.1",
     "live-server": "^1.1.0",
     "npm-run-all": "^3.1.0",
-    "onchange": "^3.0.2"
+    "onchange": "^3.0.2",
+    "uglify-js": "^3.6.0"
   },
   "dependencies": {
     "normalize.css": "^5.0.0"
