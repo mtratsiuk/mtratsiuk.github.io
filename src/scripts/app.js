@@ -1,16 +1,33 @@
-(function () {
+;(function() {
+  document.addEventListener('DOMContentLoaded', init)
 
-  var baseSaturation = 42
-  var baseLightness = 42
-  var secondaryLightess = 35
-  var buttons = document.querySelectorAll('.profile-button')
+  var easterEggs = [
+    { predicate: isFourteenth, action: applyFourteenthEgg },
+    { predicate: T, action: applyDefaultEgg },
+  ]
+
+  function init() {
+    setTimeout(updateColors, 100)
+
+    var action = (
+      easterEggs.find(function(egg) {
+        return egg.predicate && egg.predicate()
+      }) || {}
+    ).action
+
+    document
+      .querySelector('.profile-name')
+      .addEventListener('click', function() {
+        action && action()
+      })
+  }
 
   function random(from, to) {
     return Math.round((to - from) * Math.random() + from)
   }
 
   function applyStyle(elements, prop, value) {
-    elements.forEach(function (element) {
+    elements.forEach(function(element) {
       element.style[prop] = value
     })
   }
@@ -20,6 +37,11 @@
   }
 
   function updateColors() {
+    var baseSaturation = 42
+    var baseLightness = 42
+    var secondaryLightess = 35
+    var buttons = document.querySelectorAll('.profile-button')
+
     var hue = random(0, 360)
     var baseColor = hsla(hue, baseSaturation, baseLightness, 0.9)
     var secondaryColor = hsla(hue, baseSaturation, secondaryLightess, 1)
@@ -27,13 +49,25 @@
     applyStyle(buttons, 'color', secondaryColor)
   }
 
-  function init() {
-    setTimeout(updateColors, 100)
-    document.querySelector('.profile-name').addEventListener('click', function () {
-      updateColors()
-    })
+  function applyDefaultEgg() {
+    return updateColors()
   }
 
-  document.addEventListener("DOMContentLoaded", init)
+  function applyFourteenthEgg() {
+    var container = document.querySelector('.profile')
 
-}())
+    applyStyle([document.body], 'backgroundColor', '#0f4c81')
+    container.classList.add('egg-frt')
+    container.innerHTML =
+      '<div class="frt"><div class="frt-heart"></div><div class="frt-note">#0f4c81 Classic Blue</div></div>'
+  }
+
+  function isFourteenth() {
+    var date = new Date()
+    return date.getDate() === 14 && date.getMonth() === 1
+  }
+
+  function T() {
+    return true
+  }
+})()
