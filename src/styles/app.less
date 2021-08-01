@@ -3,6 +3,7 @@
 
 @bg-color: hsla(224, 38%, 12%, 0.9);
 @fg-color: white;
+@r-color: #df0031;
 @shadow-color: hsla(224, 38%, 12%, 1);
 @shadow-offset: 0.1rem;
 @color-transition: color 2s cubic-bezier(0.39, 0.575, 0.565, 1),
@@ -53,6 +54,24 @@ body {
   font-size: 1.5rem;
   margin: 0 0 2rem 0;
   cursor: default;
+}
+
+.egg-wrw {
+  .profile-location__country {
+    animation: 5s ease-in-out infinite alternate shake;
+
+    span:nth-child(even) {
+      color: @r-color;
+    }
+  }
+}
+
+.profile-location__country {
+  display: inline-block;
+
+  span:nth-child(even) {
+    transition: color .1s linear;
+  }
 }
 
 .profile-button {
@@ -131,6 +150,18 @@ body {
     opacity: 1;
     transform: scale(1) rotate(-45deg);
   }
+}
+
+@keyframes shake {
+  0% { transform: skewX(-15deg); }
+  5% { transform: skewX(15deg); }
+  10% { transform: skewX(-15deg); }
+  15% { transform: skewX(15deg); }
+  20% { transform: skewX(42deg); }
+  40% { transform: skewX(-42deg); }
+  60% { transform: skewX(21deg); }
+  80% { transform: skewX(-21deg); }
+  100% { transform: skewX(0deg); }
 }
 
 .flex-center() {

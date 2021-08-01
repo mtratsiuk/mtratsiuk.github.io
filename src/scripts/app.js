@@ -3,21 +3,22 @@
 
   var easterEggs = [
     { predicate: isFourteenth, action: applyFourteenthEgg },
+    { predicate: isLuckyToSeeWrw, action: applyWrwEgg },
     { predicate: T, action: applyDefaultEgg },
   ]
 
   function init() {
     setTimeout(updateColors, 100)
 
-    var action = (
-      easterEggs.find(function(egg) {
-        return egg.predicate && egg.predicate()
-      }) || {}
-    ).action
-
     document
       .querySelector('.profile-name')
-      .addEventListener('click', function() {
+      .addEventListener('click', function () {
+        var action = (
+          easterEggs.find(function (egg) {
+            return egg.predicate && egg.predicate()
+          }) || {}
+        ).action
+
         action && action()
       })
   }
@@ -67,7 +68,50 @@
     return date.getDate() === 14 && date.getMonth() === 1
   }
 
+  var wrwDbKey = "wrw"
+  var wrwScoreThreshold = 0.7
+  var wrwAnimationDuration = 5000
+  var wrwBackoff = 3 * 24 * 60 * 60 * 1000
+
+  function applyWrwEgg() {
+    setDbItem(wrwDbKey, Date.now())
+
+    var container = document.querySelector('.profile')
+
+    container.classList.add('egg-wrw')
+
+    setTimeout(function () {
+      container.classList.remove('egg-wrw')
+    }, wrwAnimationDuration)
+  }
+
+  function isLuckyToSeeWrw() {
+    var lastSeen = getDbItem(wrwDbKey)
+    var score = Math.random()
+
+    var isLuckyDay = !lastSeen || (Date.now() - lastSeen >= wrwBackoff)
+    var isLuckyScore = score >= wrwScoreThreshold
+
+    return isLuckyDay && isLuckyScore
+  }
+
   function T() {
     return true
+  }
+
+  var dbKey = "__mt_db_"
+
+  function getDbItem(key) {
+    try {
+      return JSON.parse(window.localStorage.getItem(dbKey + key))
+    } catch (error) {
+      return null
+    }
+  }
+
+  function setDbItem(key, value) {
+    try {
+      return window.localStorage.setItem(dbKey + key, JSON.stringify(value))
+    } catch (error) { }
   }
 })()
