@@ -15,6 +15,18 @@
 
 <body>
 🥴🥴
+<ul>
+    {* items *}
+    <li>
+        Outer: {{$it}}
+        <ol>
+            {* items *}
+            <li>Inner: {{$it}}</li>
+            {}
+        </ol>
+    </li>
+    {}
+</ul>
   <main class="profile">
     <h1 class="profile-name">{{name}}</h1>
     </h2>
@@ -26,3 +38,8 @@
 </body>
 
 </html>
+
+title=Hi
+items=[]
+items.0={}
+items.0.link=https://1.com
