@@ -1,0 +1,17 @@
+{
+    name: Art Vandelay
+
+    intro_line_0: Art works in Importing.
+    intro_line_1: Actually he is an Importer-Exporter.
+
+    current_occupations: [
+        {
+            occupation: Imports gum
+            at: Vandelay LLC
+        }
+        {
+            job: XX
+            name: YY
+        }
+    ]
+}

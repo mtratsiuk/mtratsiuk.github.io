@@ -3,10 +3,13 @@ use std::error::Error;
 use std::fs;
 use std::path::Path;
 
+use crate::rustacheon;
+
 type TemplatePair = (u8, u8);
 type TemplateError = Box<dyn Error>;
 
-const TEMPLATE_NAME: &str = "index.html";
+const TEMPLATE_NAME: &str = "index.rustache.html";
+const VARIABLES_NAME: &str = "index.rustacheon";
 const LOOP_ITEM_VARIABLE: &str = "$it";
 const VARIABLE_OPEN: TemplatePair = (b'{', b'{');
 const VARIABLE_CLOSE: TemplatePair = (b'}', b'}');
@@ -45,6 +48,15 @@ impl Parser {
             "Expected template file at {}",
             template_path.display()
         ));
+
+        let variables_path = input.join(VARIABLES_NAME);
+        let variables_string = fs::read_to_string(&variables_path).expect(&format!(
+            "Expected variables file at {}",
+            variables_path.display()
+        ));
+
+        let variables = rustacheon::parse(variables_string);
+
         let in_bytes = template.into_bytes();
         let out_bytes = Vec::with_capacity(in_bytes.len());
 

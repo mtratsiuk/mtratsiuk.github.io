@@ -1,4 +1,5 @@
 mod rustache;
+mod rustacheon;
 
 use std::path::Path;
 
