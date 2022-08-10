@@ -14,4 +14,20 @@
             name: YY
         }
     ]
+
+    deep_array: [
+        []
+        [
+            [
+                hello
+                there
+                human
+                {
+                    even_deeper: {
+                        woah: []
+                    }
+                }
+            ]
+        ]
+    ]
 }
