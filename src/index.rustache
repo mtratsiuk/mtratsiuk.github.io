@@ -10,7 +10,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://mtratsiuk.github.io/" />
 
-  <link rel="stylesheet" href="/bundle.css">
+  {> css <}
 </head>
 
 <body>
@@ -37,8 +37,8 @@
     🥴🥴
     <a href="https://github.com/mtratsiuk" class="profile-button">Github</a>
   </main>
-{{name}}
-  <script src="/bundle.js"></script>
+
+  {> js <}
 </body>
 
 </html>

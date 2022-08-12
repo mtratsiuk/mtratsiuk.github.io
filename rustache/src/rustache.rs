@@ -10,17 +10,22 @@ pub type Result<T> = result::Result<T, Box<dyn Error>>;
 
 type TemplatePair = (u8, u8);
 
-const TEMPLATE_NAME: &str = "index.rustache.html";
+const TEMPLATE_NAME: &str = "index.rustache";
 const VARIABLES_NAME: &str = "index.ron";
+const CSS_NAME: &str = "index.css";
+const JS_NAME: &str = "index.js";
 const LOOP_ITEM_VARIABLE: &str = "$it";
 const VARIABLE_OPEN: TemplatePair = (b'{', b'{');
 const VARIABLE_CLOSE: TemplatePair = (b'}', b'}');
 const LOOP_OPEN: TemplatePair = (b'{', b'*');
 const LOOP_CLOSE: TemplatePair = (b'*', b'}');
+const INLINE_OPEN: TemplatePair = (b'{', b'>');
+const INLINE_CLOSE: TemplatePair = (b'<', b'}');
 const BLOCK_END: TemplatePair = (b'{', b'}');
+const VARIABLE_PATH_SEPARATOR: char = '.';
 
 pub fn render(input: &Path, output: &Path) -> Result<()> {
-    let mut parser = Parser::from(input);
+    let mut parser = Parser::from(input)?;
     parser.run()?;
     let result = parser.result()?;
 
@@ -30,38 +35,33 @@ pub fn render(input: &Path, output: &Path) -> Result<()> {
 }
 
 #[derive(Debug)]
-struct Parser {
+struct Parser<'a> {
+    input: &'a Path,
     in_bytes: Vec<u8>,
     out_bytes: Vec<u8>,
     pos: usize,
     scopes: Vec<RonValue>,
 }
 
-impl Parser {
-    fn from(input: &Path) -> Self {
+impl<'a> Parser<'a> {
+    fn from(input: &'a Path) -> Result<Self> {
         let template_path = input.join(TEMPLATE_NAME);
-        let template = fs::read_to_string(&template_path).expect(&format!(
-            "Expected template file at {}",
-            template_path.display()
-        ));
-
+        let template = fs::read_to_string(&template_path)?;
         let variables_path = input.join(VARIABLES_NAME);
-        let variables_string = fs::read_to_string(&variables_path).expect(&format!(
-            "Expected variables file at {}",
-            variables_path.display()
-        ));
+        let variables_string = fs::read_to_string(&variables_path)?;
 
-        let variables = ron::parse(variables_string).expect("Failed to parse variables file");
+        let variables = ron::parse(variables_string)?;
 
         let in_bytes = template.into_bytes();
         let out_bytes = Vec::with_capacity(in_bytes.len());
 
-        Self {
+        Ok(Self {
+            input,
             in_bytes,
             out_bytes,
             pos: 0,
             scopes: vec![variables],
-        }
+        })
     }
 
     fn run(&mut self) -> Result<()> {
@@ -87,6 +87,10 @@ impl Parser {
                     LOOP_OPEN => {
                         self.skip(2);
                         self.run_loop()?;
+                    }
+                    INLINE_OPEN => {
+                        self.skip(2);
+                        self.run_inline()?;
                     }
                     BLOCK_END => {
                         if self.scopes.len() > 1 {
@@ -124,6 +128,33 @@ impl Parser {
         };
 
         self.emit(&mut value.into_bytes());
+
+        Ok(())
+    }
+
+    fn run_inline(&mut self) -> Result<()> {
+        let name = self.skip_until_pair(INLINE_CLOSE)?;
+        self.skip(2);
+
+        match name.as_str() {
+            "css" => {
+                let css_path = self.input.join(CSS_NAME);
+                let css_string = fs::read_to_string(&css_path)?;
+
+                self.emit(&mut "<style>\n".to_string().into_bytes());
+                self.emit(&mut css_string.into_bytes());
+                self.emit(&mut "</style>".to_string().into_bytes());
+            },
+            "js" => {
+                let js_path = self.input.join(JS_NAME);
+                let js_string = fs::read_to_string(&js_path)?;
+
+                self.emit(&mut "<script>\n".to_string().into_bytes());
+                self.emit(&mut js_string.into_bytes());
+                self.emit(&mut "</script>".to_string().into_bytes());
+            },
+            _ => return Err(format!("Unexpected inline asset: {}", name))?
+        }
 
         Ok(())
     }
@@ -199,7 +230,7 @@ impl Parser {
     }
 
     fn get_value(&mut self, key: &str) -> Result<&RonValue> {
-        let mut path = key.split('.').into_iter();
+        let mut path = key.split(VARIABLE_PATH_SEPARATOR).into_iter();
 
         for scope in self.scopes.iter().rev() {
             let variables = match scope {
