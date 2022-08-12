@@ -9,6 +9,7 @@ const OBJECT_CLOSE: u8 = b'}';
 const ARRAY_OPEN: u8 = b'[';
 const ARRAY_CLOSE: u8 = b']';
 const ID_CLOSE: u8 = b':';
+const ID_CLOSE_ESCAPE: &str = r"\:";
 
 pub type Result<T> = result::Result<T, Box<dyn Error>>;
 
@@ -51,9 +52,16 @@ impl<'a> Parser<'a> {
         return match token {
             Token::ObjectOpen => self.run_object(),
             Token::ArrayOpen => self.run_array(),
-            Token::Text(value) => Ok(Value::Text(String::from_utf8(value.to_vec())?)),
+            Token::Text(value) => self.run_text(value),
             _ => Err(format!("Expected Object, Array or Text, got: {:?}", token))?,
         };
+    }
+
+    fn run_text(&mut self, value: &[u8]) -> Result<Value> {
+        let string = String::from_utf8(value.to_vec())?
+            .replace(ID_CLOSE_ESCAPE, &(ID_CLOSE as char).to_string());
+
+        Ok(Value::Text(string))
     }
 
     fn run_object(&mut self) -> Result<Value> {
@@ -147,7 +155,9 @@ impl<'a> Lexer<'a> {
                     loop {
                         end = self.pos + 1;
                         is_eof = end >= self.bytes.len();
-                        is_id_close = !is_eof && self.bytes[end] == ID_CLOSE;
+                        is_id_close = !is_eof
+                            && self.bytes[end] == ID_CLOSE
+                            && &self.bytes[end - 1..end + 1] != ID_CLOSE_ESCAPE.as_bytes();
                         is_text_close = !is_eof && self.bytes[end].is_ascii_control();
 
                         self.advance(1);
@@ -198,6 +208,14 @@ mod tests {
     #[test]
     fn parse_array() {
         assert_eq!(parse("[]".to_string()).unwrap(), Value::Array(vec![]));
+    }
+
+    #[test]
+    fn parse_escaped_id_clise() {
+        assert_eq!(
+            parse(r"https\://test.com".to_string()).unwrap(),
+            Value::Text("https://test.com".to_string())
+        );
     }
 
     #[test]
