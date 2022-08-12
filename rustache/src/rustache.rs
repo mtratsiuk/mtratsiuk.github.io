@@ -19,10 +19,14 @@ const VARIABLE_OPEN: TemplatePair = (b'{', b'{');
 const VARIABLE_CLOSE: TemplatePair = (b'}', b'}');
 const LOOP_OPEN: TemplatePair = (b'{', b'*');
 const LOOP_CLOSE: TemplatePair = (b'*', b'}');
+const OPTIONAL_OPEN: TemplatePair = (b'{', b'?');
+const OPTIONAL_CLOSE: TemplatePair = (b'?', b'}');
 const INLINE_OPEN: TemplatePair = (b'{', b'>');
 const INLINE_CLOSE: TemplatePair = (b'<', b'}');
 const BLOCK_END: TemplatePair = (b'{', b'}');
 const VARIABLE_PATH_SEPARATOR: char = '.';
+
+const BLOCK_OPENING_PAIRS: [TemplatePair; 2] = [LOOP_OPEN, OPTIONAL_OPEN];
 
 pub fn render(input: &Path, output: &Path) -> Result<()> {
     let mut parser = Parser::from(input)?;
@@ -88,6 +92,10 @@ impl<'a> Parser<'a> {
                         self.skip(2);
                         self.run_loop()?;
                     }
+                    OPTIONAL_OPEN => {
+                        self.skip(2);
+                        self.run_optional()?;
+                    }
                     INLINE_OPEN => {
                         self.skip(2);
                         self.run_inline()?;
@@ -144,7 +152,7 @@ impl<'a> Parser<'a> {
                 self.emit(&mut "<style>\n".to_string().into_bytes());
                 self.emit(&mut css_string.into_bytes());
                 self.emit(&mut "</style>".to_string().into_bytes());
-            },
+            }
             "js" => {
                 let js_path = self.input.join(JS_NAME);
                 let js_string = fs::read_to_string(&js_path)?;
@@ -152,8 +160,8 @@ impl<'a> Parser<'a> {
                 self.emit(&mut "<script>\n".to_string().into_bytes());
                 self.emit(&mut js_string.into_bytes());
                 self.emit(&mut "</script>".to_string().into_bytes());
-            },
-            _ => return Err(format!("Unexpected inline asset: {}", name))?
+            }
+            _ => return Err(format!("Unexpected inline asset: {}", name))?,
         }
 
         Ok(())
@@ -184,6 +192,45 @@ impl<'a> Parser<'a> {
         }
 
         self.skip(2);
+
+        Ok(())
+    }
+
+    fn run_optional(&mut self) -> Result<()> {
+        let name = self.skip_until_pair(OPTIONAL_CLOSE)?;
+        self.skip(2);
+
+        let variable = self.get_value(&name);
+        let mut inner_blocks = 0;
+
+        match variable {
+            Ok(_) => {
+                self.run_html()?;
+                self.skip(2);
+            }
+            Err(_) => loop {
+                match self.peek_pair() {
+                    Some(pair) => match pair {
+                        pair if BLOCK_OPENING_PAIRS.contains(&pair) => {
+                            self.skip(2);
+                            inner_blocks += 1;
+                        }
+                        BLOCK_END => {
+                            self.skip(2);
+                            if inner_blocks > 0 {
+                                inner_blocks -= 1;
+                            } else {
+                                break;
+                            }
+                        }
+                        _ => self.skip(1),
+                    },
+                    None => {
+                        return Err(format!("Expected {:?} closing Optional block", BLOCK_END))?
+                    }
+                }
+            },
+        }
 
         Ok(())
     }
