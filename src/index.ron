@@ -1,40 +1,169 @@
 {
-    name: Art Vandelay
+    name: Misha Tratsiuk
 
-    intro_line_0: Art works in Importing.
-    intro_line_1: Actually he is an Importer-Exporter.
+    intro_line_0: Misha is a life form born in Belarus, living in the&nbsp;Netherlands.
+    intro_line_1: Spends most of his time doing\:
 
-    current_occupations: [
+    occupations: [
         {
-            occupation: Imports gum
-            at: Vandelay LLC
+            area: 💻 Software Engineering
+            name: Miro
+            url: https\://miro.com
+            formerly: [
+                {
+                    name: hCaptcha
+                    url: https\://hcaptcha.com
+                }
+                {
+                    name: Godel
+                    url: https\://www.godeltech.com/
+                }
+                {
+                    name: Epam
+                    url: https\://www.epam.com/
+                }
+            ]
         }
         {
-            occupation: Imports diapers
-            at: Vandelay LLC
+            area: 🏊‍♂️ Swimming
+            name: SwimGym
+            url: https\://swimgym.nl
+        }
+        {
+            area: 🤘 Visiting music live shows
+        }
+        {
+            area: 🎸 Practicing bass guitar once in a while
         }
     ]
 
-    props: {
-        items: [
-            item1
-            item2
-        ]
-    }
+    links: [
+        {
+            name: github
+            url: https\://github.com/mtratsiuk
+        }
+        {
+            name: linkedin
+            url: https\://www.linkedin.com/in/mtratsiuk
+        }
+        {
+            name: swimrankings
+            url: https\://www.swimrankings.net/index.php?page=athleteDetail&athleteId=5481048
+        }
+        {
+            name: instagram
+            url: https\://www.instagram.com/mtrtsk
+        }
+    ]
 
-    deep_array: [
-        []
-        [
-            [
-                hello
-                there
-                human
-                {
-                    even_deeper: {
-                        woah: []
-                    }
-                }
-            ]
-        ]
+    swim_pbs_title: 🏊‍♂️ Swimming Personal Bests
+
+    swim_pbs: [
+        {
+            distance: 50 freestyle
+            time: 28.32
+        }
+        {
+            distance: 100 freestyle
+            time: 1\:08.67
+        }
+        {
+            distance: 50 backstroke
+            time: 36.19
+        }
+        {
+            distance: 50 breaststroke
+            time: 36.43
+        }
+        {
+            distance: 50 butterfly
+            time: 32.33
+        }
+        {
+            distance: 200 medley
+            time: 2\:59.03
+        }
+    ]
+
+    gigs_title: 🤘 Gigs Counter
+
+    gigs: [
+        {
+            name: Enter Shikari
+            count: 4
+        }
+        {
+            name: Megadeth
+            count: 2
+        }
+        {
+            name: Judas Priest
+            count: 2
+        }
+        {
+            name: Arch Enemy
+            count: 2
+        }
+        {
+            name: Children of Bodom
+            count: 1
+        }
+        {
+            name: Powerwolf
+            count: 1
+        }
+        {
+            name: Manowar
+            count: 1
+        }
+        {
+            name: Ghost
+            count: 1
+        }
+        {
+            name: Tool
+            count: 1
+        }
+        {
+            name: Dream Theater
+            count: 1
+        }
+        {
+            name: Devin Townsend
+            count: 1
+        }
+        {
+            name: Mastodon
+            count: 1
+        }
+        {
+            name: FFDP
+            count: 1
+        }
+        {
+            name: Steel Panther
+            count: 1
+        }
+    ]
+
+    projects_title: 💻 Projects
+
+    projects: [
+        {
+            name: mtratsiuk.github.io
+            url: https\://github.com/mtratsiuk/mtratsiuk.github.io
+            description: This web page. Rendered with a home-made templating engine & a custom object notation parser written in Rust.
+        }
+        {
+            name: mt-lang
+            url: https\://github.com/mtratsiuk/mt-lang
+            description: Toy compile-to-js programming language with a lisp-like syntax, built as a result of Parser Combinators technique exploration.
+        }
+        {
+            name: mg-app
+            url: https\://misha.spris.dev/archive/
+            source: https\://github.com/mtratsiuk/archive/tree/master/Machine%20Graphics/src
+            description: Computer Graphics sandbox with basic 2D rendering tools, built back in university days.
+        }
     ]
 }

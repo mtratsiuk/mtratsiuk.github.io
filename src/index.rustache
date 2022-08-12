@@ -1,49 +1,85 @@
 <!doctype html>
 <html lang="en">
 
-<head xmlns:og="http://ogp.me/ns#">
+  <head>
   <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-  <meta property="og:title" content="Mihail Tratsiuk" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://mtratsiuk.github.io/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   {> css <}
-</head>
+  </head>
 
-<body>
-🥴🥴
-<ul>
-    {* current_occupations *}
-    <li>
-        {{ $it.occupation }}
-        {{ $it.at }}
-    </li>
-    {}
+  <body class="p-1 relative">
+    <div class="m-switch-container flex flex-align-center z-index-1">
+        Jedi
+        <label class="m-switch" for="theme-checkbox">
+            <input type="checkbox" id="theme-checkbox" />
+            <div class="m-slider m-round"></div>
+        </label>
+        Sith
+    </div>
 
-    {* props.items *}
-    <li>
-        {{ $it }}
-    </li>
-    {}
-</ul>
-  <main class="profile">
-    <h1 class="profile-name">{{name}}</h1>
-    <h2 class="profile-name">{{intro_line_0}}</h2>
-    <h3 class="profile-name">{{intro_line_1}}</h3>
+    <div class="w-100 min-h-100">
+      <main class="flex flex-column flex-align-center z-index-0 min-h-100">
+        <div class="max-width-container mb-biggest flex flex-column flex-justify-center">
+            <div class="mb">
+                <h1 class="mb">{{ name }}</h1>
+                <div>{{ intro_line_0 }}</div>
+                <div>{{ intro_line_1 }}</div>
+            </div>
 
-    🥴🥴
-    <a href="https://github.com/mtratsiuk" class="profile-button">Github</a>
-  </main>
+            <div class="fs-smaller mb-bigger">
+            {* occupations *}
+                <div class="mb-smaller">
+                {{ $it.area }} {? $it.name ?} <a href="{{ $it.url }}">@{{ $it.name }}</a> {}
+
+                {? $it.formerly ?}
+                    (formerly:
+                    {* $it.formerly *}
+                        <a href="{{ $it.url }}">@{{ $it.name }}</a><!--
+                    -->{}<!--
+                    -->)
+                {}
+                </div>
+            {}
+            </div>
+
+            <div class="max-width-container flex flex-wrap flex-gap flex-justify-around">
+              {* links *}
+                <a href="{{ $it.url }}">{{ $it.name }}</a>
+              {}
+            </div>
+        </div>
+
+        <div class="c-grid flex-grow flex flex-justify-around flex-align-stretch">
+            <div class="c-projects border p-smaller">
+                <h1 class="mb">{{ projects_title }}</h1>
+                {* projects *}
+                    <div class="mb">
+                        <a href="{{ $it.url }}">{{ $it.name }}</a> {? $it.source ?} <a href="{{ $it.source }}">src</a> {}
+                        <div class="fs-smaller">{{ $it.description }}</div>
+                    </div>
+                {}
+            </div>
+
+            <div class="c-swimming border p-smaller">
+                <h1 class="mb">{{ swim_pbs_title }}</h1>
+                {* swim_pbs *}
+                    <div class="mb-smaller fs-smaller">{{ $it.distance }}: <b>{{ $it.time }}</b></div>
+                {}
+            </div>
+
+            <div class="c-gigs border p-smaller">
+                <h1 class="mb">{{ gigs_title }}</h1>
+                {* gigs *}
+                    <div class="fs-smaller">{{ $it.name }}: <b>{{ $it.count }}</b></div>
+                {}
+            </div>
+        </div>
+
+      </main>
+    </div>
 
   {> js <}
-</body>
+  </body>
 
 </html>
-
-title=Hi
-items=[]
-items.0={}
-items.0.link=https://1.com
