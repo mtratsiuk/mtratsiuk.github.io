@@ -18,8 +18,8 @@ fn main() {
     );
 
     match rustache::render(input, output) {
-        Ok(_) => println!("Done!"),
-        Err(error) => println!("Failed to rustache: {error}"),
+        Ok(_) => println!("[rustache] Successfully rendered template into {}", output.display()),
+        Err(error) => println!("[rustache] Failed to render template: {error}"),
     }
 }
 
