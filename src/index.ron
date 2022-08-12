@@ -10,10 +10,17 @@
             at: Vandelay LLC
         }
         {
-            job: XX
-            name: YY
+            occupation: Imports diapers
+            at: Vandelay LLC
         }
     ]
+
+    props: {
+        items: [
+            item1
+            item2
+        ]
+    }
 
     deep_array: [
         []

@@ -1,15 +1,17 @@
 use std::collections::HashMap;
 use std::error::Error;
-use std::fs;
 use std::path::Path;
+use std::{fs, result};
 
-use crate::rustacheon;
+use crate::ron;
+use crate::ron::Value as RonValue;
+
+pub type Result<T> = result::Result<T, Box<dyn Error>>;
 
 type TemplatePair = (u8, u8);
-type TemplateError = Box<dyn Error>;
 
 const TEMPLATE_NAME: &str = "index.rustache.html";
-const VARIABLES_NAME: &str = "index.rustacheon";
+const VARIABLES_NAME: &str = "index.ron";
 const LOOP_ITEM_VARIABLE: &str = "$it";
 const VARIABLE_OPEN: TemplatePair = (b'{', b'{');
 const VARIABLE_CLOSE: TemplatePair = (b'}', b'}');
@@ -17,7 +19,7 @@ const LOOP_OPEN: TemplatePair = (b'{', b'*');
 const LOOP_CLOSE: TemplatePair = (b'*', b'}');
 const BLOCK_END: TemplatePair = (b'{', b'}');
 
-pub fn render(input: &Path, output: &Path) -> Result<(), TemplateError> {
+pub fn render(input: &Path, output: &Path) -> Result<()> {
     let mut parser = Parser::from(input);
     parser.run()?;
     let result = parser.result()?;
@@ -28,17 +30,11 @@ pub fn render(input: &Path, output: &Path) -> Result<(), TemplateError> {
 }
 
 #[derive(Debug)]
-enum Variable {
-    Value(String),
-    Array(Vec<String>),
-}
-
-#[derive(Debug)]
 struct Parser {
     in_bytes: Vec<u8>,
     out_bytes: Vec<u8>,
     pos: usize,
-    scopes: Vec<HashMap<String, Variable>>,
+    scopes: Vec<RonValue>,
 }
 
 impl Parser {
@@ -55,7 +51,7 @@ impl Parser {
             variables_path.display()
         ));
 
-        let variables = rustacheon::parse(variables_string);
+        let variables = ron::parse(variables_string).expect("Failed to parse variables file");
 
         let in_bytes = template.into_bytes();
         let out_bytes = Vec::with_capacity(in_bytes.len());
@@ -64,17 +60,11 @@ impl Parser {
             in_bytes,
             out_bytes,
             pos: 0,
-            scopes: vec![HashMap::from([
-                ("name".to_string(), Variable::Value("Misha".to_string())),
-                (
-                    "items".to_string(),
-                    Variable::Array(vec!["first!".to_string(), "second!".to_string()]),
-                ),
-            ])],
+            scopes: vec![variables],
         }
     }
 
-    fn run(&mut self) -> Result<(), TemplateError> {
+    fn run(&mut self) -> Result<()> {
         while self.pos < self.in_bytes.len() {
             self.run_html()?;
         }
@@ -82,11 +72,11 @@ impl Parser {
         Ok(())
     }
 
-    fn result(self) -> Result<String, TemplateError> {
+    fn result(self) -> Result<String> {
         Ok(String::from_utf8(self.out_bytes)?)
     }
 
-    fn run_html(&mut self) -> Result<(), TemplateError> {
+    fn run_html(&mut self) -> Result<()> {
         loop {
             match self.peek_pair() {
                 Some(pair) => match pair {
@@ -122,16 +112,14 @@ impl Parser {
         Ok(())
     }
 
-    fn run_variable(&mut self) -> Result<(), TemplateError> {
+    fn run_variable(&mut self) -> Result<()> {
         let name = self.skip_until_pair(VARIABLE_CLOSE)?;
         self.skip(2);
 
-        let variable = self
-            .get_value(&name)
-            .ok_or(format!("Undefined variable {}", name))?;
+        let variable = self.get_value(&name)?;
 
         let value = match variable {
-            Variable::Value(x) => x.clone(),
+            RonValue::Text(x) => x.clone(),
             _ => return Err(format!("Expected {} to be variable", name))?,
         };
 
@@ -140,16 +128,14 @@ impl Parser {
         Ok(())
     }
 
-    fn run_loop(&mut self) -> Result<(), TemplateError> {
+    fn run_loop(&mut self) -> Result<()> {
         let name = self.skip_until_pair(LOOP_CLOSE)?;
         self.skip(2);
 
-        let variable = self
-            .get_value(&name)
-            .ok_or(format!("Undefined variable {}", name))?;
+        let variable = self.get_value(&name)?;
 
         let items = match variable {
-            Variable::Array(x) => x.clone(),
+            RonValue::Array(x) => x.clone(),
             _ => return Err(format!("Expected {} to be array", name))?,
         };
 
@@ -158,7 +144,7 @@ impl Parser {
         for item in items {
             self.pos = return_pos;
 
-            let scope = HashMap::from([(LOOP_ITEM_VARIABLE.to_string(), Variable::Value(item))]);
+            let scope = RonValue::Object(HashMap::from([(LOOP_ITEM_VARIABLE.to_string(), item)]));
             self.scopes.push(scope);
 
             self.run_html()?;
@@ -183,7 +169,7 @@ impl Parser {
         self.pos += n;
     }
 
-    fn skip_until_pair(&mut self, pair: TemplatePair) -> Result<String, TemplateError> {
+    fn skip_until_pair(&mut self, pair: TemplatePair) -> Result<String> {
         let mut name = vec![];
 
         while self
@@ -212,13 +198,42 @@ impl Parser {
         self.out_bytes.append(bytes);
     }
 
-    fn get_value(&mut self, key: &str) -> Option<&Variable> {
+    fn get_value(&mut self, key: &str) -> Result<&RonValue> {
+        let mut path = key.split('.').into_iter();
+
         for scope in self.scopes.iter().rev() {
-            if let Some(value) = scope.get(key) {
-                return Some(value);
+            let variables = match scope {
+                RonValue::Object(x) => x,
+                _ => {
+                    return Err(format!(
+                        "Expected root scope to be Object, got: {:?}",
+                        scope
+                    ))?
+                }
+            };
+
+            let root_key = path
+                .next()
+                .ok_or(format!("Unexpected variable name {}", key))?;
+            let root_value = variables.get(root_key);
+
+            if let Some(mut value) = root_value {
+                for next_key in path {
+                    match value {
+                        RonValue::Object(object) => {
+                            value = object.get(next_key).ok_or(format!(
+                                "Property {} is undefined at {:?}",
+                                next_key, value
+                            ))?;
+                        }
+                        _ => Err(format!("Cannot read property {} of {:?}", next_key, value))?,
+                    }
+                }
+
+                return Ok(value);
             }
         }
 
-        None
+        Err(format!("Variable {} is undefined", key))?
     }
 }

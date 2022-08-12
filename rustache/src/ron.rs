@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::iter::Peekable;
 use std::slice::Iter;
-use std::{fmt, result, vec};
+use std::{result, vec};
 
 const OBJECT_OPEN: u8 = b'{';
 const OBJECT_CLOSE: u8 = b'}';
@@ -12,14 +12,22 @@ const ID_CLOSE: u8 = b':';
 
 pub type Result<T> = result::Result<T, Box<dyn Error>>;
 
+/// Parses RON (Rustache Object Notation) string into AST
 pub fn parse(value: String) -> Result<Value> {
     let bytes = value.into_bytes();
     let mut lexer = Lexer::from(&bytes);
-    let tokens = dbg!(lexer.run()?);
+    let tokens = lexer.run()?;
     let mut parser = Parser::from(tokens);
-    let result = dbg!(parser.run()?);
+    let result = parser.run()?;
 
     Ok(result)
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum Value {
+    Text(String),
+    Array(Vec<Value>),
+    Object(HashMap<String, Value>),
 }
 
 #[derive(Debug)]
@@ -67,7 +75,7 @@ impl<'a> Parser<'a> {
             }
         }
 
-        Ok(dbg!(Value::Object(object)))
+        Ok(Value::Object(object))
     }
 
     fn run_array(&mut self) -> Result<Value> {
@@ -90,17 +98,11 @@ impl<'a> Parser<'a> {
             }
         }
 
-        Ok(dbg!(Value::Array(array)))
+        Ok(Value::Array(array))
     }
 }
 
 #[derive(Debug)]
-pub enum Value {
-    Text(String),
-    Array(Vec<Value>),
-    Object(HashMap<String, Value>),
-}
-
 enum Token<'a> {
     Id(&'a [u8]),
     Text(&'a [u8]),
@@ -145,8 +147,8 @@ impl<'a> Lexer<'a> {
                     loop {
                         end = self.pos + 1;
                         is_eof = end >= self.bytes.len();
-                        is_id_close = self.bytes[end] == ID_CLOSE;
-                        is_text_close = self.bytes[end].is_ascii_control();
+                        is_id_close = !is_eof && self.bytes[end] == ID_CLOSE;
+                        is_text_close = !is_eof && self.bytes[end].is_ascii_control();
 
                         self.advance(1);
 
@@ -181,21 +183,63 @@ impl<'a> Lexer<'a> {
     }
 }
 
-impl<'a> fmt::Debug for Token<'a> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Token::Id(x) => {
-                let value = String::from_utf8(x.to_vec()).unwrap();
-                f.debug_struct(&format!("Id('{}')", value)).finish()
-            }
-            Token::Text(x) => {
-                let value = String::from_utf8(x.to_vec()).unwrap();
-                f.debug_struct(&format!("Text('{}')", value)).finish()
-            }
-            Token::ObjectOpen => f.debug_struct("ObjectOpen").finish(),
-            Token::ObjectClose => f.debug_struct("ObjectClose").finish(),
-            Token::ArrayOpen => f.debug_struct("ArrayOpen").finish(),
-            Token::ArrayClose => f.debug_struct("ArrayClose").finish(),
-        }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_text() {
+        assert_eq!(
+            parse("text".to_string()).unwrap(),
+            Value::Text("text".to_string())
+        );
+    }
+
+    #[test]
+    fn parse_array() {
+        assert_eq!(parse("[]".to_string()).unwrap(), Value::Array(vec![]));
+    }
+
+    #[test]
+    fn parse_object() {
+        assert_eq!(
+            parse("{}".to_string()).unwrap(),
+            Value::Object(HashMap::new())
+        );
+    }
+
+    #[test]
+    fn parse_nested() {
+        let string = "
+{
+    text: Name
+
+    array: [
+        ArrayText
+    ]
+
+    object: {
+        field: ObjectText
+    }
+}
+"
+        .to_string();
+
+        let expected = Value::Object(HashMap::from([
+            ("text".to_string(), Value::Text("Name".to_string())),
+            (
+                "array".to_string(),
+                Value::Array(vec![Value::Text("ArrayText".to_string())]),
+            ),
+            (
+                "object".to_string(),
+                Value::Object(HashMap::from([(
+                    "field".to_string(),
+                    Value::Text("ObjectText".to_string()),
+                )])),
+            ),
+        ]));
+
+        assert_eq!(parse(string).unwrap(), expected);
     }
 }

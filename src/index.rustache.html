@@ -16,20 +16,24 @@
 <body>
 🥴🥴
 <ul>
-    {* items *}
+    {* current_occupations *}
     <li>
-        Outer: {{$it}}
-        <ol>
-            {* items *}
-            <li>Inner: {{$it}}</li>
-            {}
-        </ol>
+        {{ $it.occupation }}
+        {{ $it.at }}
+    </li>
+    {}
+
+    {* props.items *}
+    <li>
+        {{ $it }}
     </li>
     {}
 </ul>
   <main class="profile">
     <h1 class="profile-name">{{name}}</h1>
-    </h2>
+    <h2 class="profile-name">{{intro_line_0}}</h2>
+    <h3 class="profile-name">{{intro_line_1}}</h3>
+
     🥴🥴
     <a href="https://github.com/mtratsiuk" class="profile-button">Github</a>
   </main>
