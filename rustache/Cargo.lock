@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "rustache"
+name = "mt-rustache"
 version = "0.1.0"
