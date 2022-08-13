@@ -7,3 +7,5 @@ cd "$(dirname "$0")"/..
 
 ./bin/build.bash
 ./bin/purge-cache.bash
+
+cp CNAME ./build/CNAME
