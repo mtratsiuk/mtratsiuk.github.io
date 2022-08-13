@@ -6,5 +6,4 @@ set -o pipefail
 cd "$(dirname "$0")"/..
 
 ./bin/build.bash
-
-# TODO: purge CF cache
+./bin/purge-cache.bash

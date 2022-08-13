@@ -18,6 +18,9 @@ jobs:
       run: ./bin/build-rustache.bash
 
     - name: Build Page
+      env:
+        CF_PURGE_TOKEN: ${{ secrets.CF_PURGE_TOKEN }}
+        CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
       run: ./bin/ci.bash
 
     - name: Deploy
