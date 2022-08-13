@@ -211,7 +211,7 @@ mod tests {
     }
 
     #[test]
-    fn parse_escaped_id_clise() {
+    fn parse_escaped_id_close() {
         assert_eq!(
             parse(r"https\://test.com".to_string()).unwrap(),
             Value::Text("https://test.com".to_string())

@@ -152,7 +152,7 @@
         {
             name: mtratsiuk.github.io
             url: https\://github.com/mtratsiuk/mtratsiuk.github.io
-            description: This web page. Rendered with a home-made templating engine & a custom object notation parser written in Rust.
+            description: This web page. Rendered with a home-made templating engine and a custom object notation parser written in Rust.
         }
         {
             name: mt-lang
