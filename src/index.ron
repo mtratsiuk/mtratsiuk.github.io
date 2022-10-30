@@ -93,6 +93,10 @@
             count: 4
         }
         {
+            name: Arch Enemy
+            count: 3
+        }
+        {
             name: Megadeth
             count: 2
         }
@@ -101,8 +105,16 @@
             count: 2
         }
         {
-            name: Arch Enemy
-            count: 2
+            name: Amon Amarth
+            count: 1
+        }
+        {
+            name: Behemoth
+            count: 1
+        }
+        {
+            name: Carcass
+            count: 1
         }
         {
             name: Children of Bodom
@@ -110,6 +122,10 @@
         }
         {
             name: Powerwolf
+            count: 1
+        }
+        {
+            name: Machine Head
             count: 1
         }
         {
