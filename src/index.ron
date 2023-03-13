@@ -97,6 +97,10 @@
             count: 3
         }
         {
+            name: Devin Townsend
+            count: 2
+        }
+        {
             name: Megadeth
             count: 2
         }
@@ -133,6 +137,22 @@
             count: 1
         }
         {
+            name: Municipal Waste
+            count: 1
+        }
+        {
+            name: Kreator
+            count: 1
+        }
+        {
+            name: Lamb of God
+            count: 1
+        }
+        {
+            name: Opeth
+            count: 1
+        }
+        {
             name: Ghost
             count: 1
         }
@@ -142,10 +162,6 @@
         }
         {
             name: Dream Theater
-            count: 1
-        }
-        {
-            name: Devin Townsend
             count: 1
         }
         {
