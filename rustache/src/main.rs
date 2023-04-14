@@ -1,5 +1,6 @@
 mod ron;
 mod rustache;
+mod pipe;
 
 use std::{env, path::Path};
 
