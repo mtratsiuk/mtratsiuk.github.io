@@ -6,9 +6,9 @@ use crate::ron::Value;
 
 pub type Result<T> = result::Result<T, Box<dyn Error>>;
 
-pub fn parse(value: String) -> Result<impl Pipe> {
+pub fn parse(value: &str) -> Result<impl Pipe> {
     let (name, params) = match value.split_once(' ') {
-        None => (value, "".to_string()),
+        None => (value.to_string(), "".to_string()),
         Some((name, params)) => (name.to_string(), params.to_string())
     };
 
@@ -50,7 +50,7 @@ mod tests {
 
     #[test]
     fn reverse_pipe_should_reverse_text() {
-        let pipe = parse("$reverse".to_string()).unwrap();
+        let pipe = parse("$reverse").unwrap();
         let value = Value::Text("123456".to_string());
         let expected = Value::Text("654321".to_string());
 

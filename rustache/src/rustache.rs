@@ -3,9 +3,9 @@ use std::error::Error;
 use std::path::Path;
 use std::{fs, result};
 
+use crate::pipe::{self, Pipe};
 use crate::ron;
 use crate::ron::Value as RonValue;
-use crate::pipe::{self, Pipe};
 
 pub type Result<T> = result::Result<T, Box<dyn Error>>;
 
@@ -132,7 +132,14 @@ impl<'a> Parser<'a> {
                 },
                 None => {
                     // Only single char left, consume and stop
-                    self.consume(1);
+                    //
+                    // Bound check handles the case when template ends with
+                    // block closing chars (e.g. `{}`) - then they would be already
+                    // consumed by last parser
+                    if self.in_bytes.len() > self.pos {
+                        self.consume(1);
+                    }
+
                     break;
                 }
             }
@@ -146,20 +153,13 @@ impl<'a> Parser<'a> {
 
         self.skip(2);
 
-        let (name, pipe) = match variable_string.split_once(PIPE_SEPARATOR) {
-            None => (variable_string, None),
-            Some((name, pipe)) => (name.trim().to_string(), Some(pipe::parse(pipe.trim().to_string())?))
-        };
-
+        let (name, apply_pipe) = self.get_name_and_pipe(&variable_string)?;
         let variable = self.get_value(&name)?;
 
         let value = match variable {
-            RonValue::Text(x) => match pipe {
-                None => x.clone(),
-                Some(pipe) => match pipe.apply(variable)? {
-                    RonValue::Text(x) => x.clone(),
-                    _ => return Err("Unexpected pipe result")?,
-                }
+            value @ RonValue::Text(_) => match apply_pipe(value)? {
+                RonValue::Text(x) => x.clone(),
+                _ => return Err("Expected pipe to return text")?,
             },
             _ => return Err(format!("Expected {} to be variable", name))?,
         };
@@ -197,13 +197,17 @@ impl<'a> Parser<'a> {
     }
 
     fn run_loop(&mut self) -> Result<()> {
-        let name = self.skip_until_pair(LOOP_CLOSE)?;
+        let variable_string = self.skip_until_pair(LOOP_CLOSE)?;
         self.skip(2);
 
+        let (name, apply_pipe) = self.get_name_and_pipe(&variable_string)?;
         let variable = self.get_value(&name)?;
 
         let items = match variable {
-            RonValue::Array(x) => x.clone(),
+            value @ RonValue::Array(_) => match apply_pipe(value)? {
+                RonValue::Array(x) => x.clone(),
+                _ => return Err("Expected pipe to return array")?,
+            },
             _ => return Err(format!("Expected {} to be array", name))?,
         };
 
@@ -342,8 +346,24 @@ impl<'a> Parser<'a> {
 
         Err(format!("Variable {} is undefined", key))?
     }
-}
 
+    fn get_name_and_pipe(
+        &self,
+        var_str: &str,
+    ) -> Result<(String, impl FnOnce(&RonValue) -> Result<RonValue>)> {
+        let (name, pipe) = match var_str.split_once(PIPE_SEPARATOR) {
+            None => (var_str.to_string(), None),
+            Some((name, pipe_str)) => {
+                (name.trim().to_string(), Some(pipe::parse(pipe_str.trim())?))
+            }
+        };
+
+        Ok((name, |val: &RonValue| match pipe {
+            None => Ok(val.clone()),
+            Some(pipe) => pipe.apply(val),
+        }))
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -353,43 +373,72 @@ mod tests {
     fn parser_should_handle_template_variable() {
         let template = "\
 <div>{{ name }}</div>\
-".to_string();
+"
+        .to_string();
 
         let variables = "
 {
     name: Test name
 }
-".to_string();
+"
+        .to_string();
 
         let mut parser = Parser::__broken_from_string(template, variables).unwrap();
         parser.run().unwrap();
         let result = parser.result().unwrap();
 
-        assert_eq!(
-            result,
-            "<div>Test name</div>"
-        );
+        assert_eq!(result, "<div>Test name</div>");
     }
 
     #[test]
     fn parser_should_handle_template_variable_with_reverse_pipe() {
         let template = "\
 <div>{{ name | $reverse }}</div>\
-".to_string();
+"
+        .to_string();
 
         let variables = "
 {
     name: 12345
 }
-".to_string();
+"
+        .to_string();
 
         let mut parser = Parser::__broken_from_string(template, variables).unwrap();
         parser.run().unwrap();
         let result = parser.result().unwrap();
 
-        assert_eq!(
-            result,
-            "<div>54321</div>"
-        );
+        assert_eq!(result, "<div>54321</div>");
+    }
+
+    #[test]
+    fn parser_should_handle_template_loop_with_reverse_pipe() {
+        let template = "\
+{* items | $reverse *}<div>{{ $it.name }}</div>{}\
+"
+        .to_string();
+
+        let variables = "
+{
+    items: [
+        {
+            name: One
+        }
+        {
+            name: Two
+        }
+        {
+            name: Three
+        }
+    ]
+}
+"
+        .to_string();
+
+        let mut parser = Parser::__broken_from_string(template, variables).unwrap();
+        parser.run().unwrap();
+        let result = parser.result().unwrap();
+
+        assert_eq!(result, "<div>Three</div><div>Two</div><div>One</div>");
     }
 }
