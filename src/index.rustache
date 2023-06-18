@@ -63,14 +63,14 @@
 
             <div class="c-swimming border p-smaller">
                 <h1 class="mb">{{ swim_pbs_title }}</h1>
-                {* swim_pbs *}
+                {* swim_pbs | $sort ($str_cmp $1.time $2.time) *}
                     <div class="mb-smaller fs-smaller">{{ $it.distance }}: <b>{{ $it.time }}</b></div>
                 {}
             </div>
 
             <div class="c-gigs border p-smaller">
                 <h1 class="mb">{{ gigs_title }}</h1>
-                {* gigs *}
+                {* gigs | $sort ($sub $2.count $1.count) *}
                     <div class="fs-smaller">{{ $it.name }}: <b>{{ $it.count }}</b></div>
                 {}
             </div>

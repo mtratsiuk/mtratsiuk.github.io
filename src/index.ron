@@ -61,27 +61,27 @@
     swim_pbs: [
         {
             distance: 50 freestyle
-            time: 28.32
+            time: 00\:28.32
         }
         {
             distance: 100 freestyle
-            time: 1\:08.67
+            time: 01\:08.67
         }
         {
             distance: 50 backstroke
-            time: 36.19
+            time: 00\:36.19
         }
         {
             distance: 50 breaststroke
-            time: 36.43
+            time: 00\:36.43
         }
         {
             distance: 50 butterfly
-            time: 32.33
+            time: 00\:32.33
         }
         {
             distance: 200 medley
-            time: 2\:59.03
+            time: 02\:59.03
         }
     ]
 
@@ -174,6 +174,22 @@
         }
         {
             name: Steel Panther
+            count: 1
+        }
+        {
+            name: Russian Circles
+            count: 1
+        }
+        {
+            name: Cult of Luna
+            count: 1
+        }
+        {
+            name: Overkill
+            count: 1
+        }
+        {
+            name: Gojira
             count: 1
         }
     ]

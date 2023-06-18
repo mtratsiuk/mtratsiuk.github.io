@@ -3,7 +3,7 @@ use std::error::Error;
 use std::path::Path;
 use std::{fs, result};
 
-use crate::pipe::{self, Pipe};
+use crate::pipe::{self};
 use crate::ron;
 use crate::ron::Value as RonValue;
 
