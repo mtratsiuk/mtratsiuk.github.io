@@ -351,16 +351,17 @@ impl<'a> Parser<'a> {
         &self,
         var_str: &str,
     ) -> Result<(String, impl FnOnce(&RonValue) -> Result<RonValue>)> {
-        let (name, pipe) = match var_str.split_once(PIPE_SEPARATOR) {
-            None => (var_str.to_string(), None),
-            Some((name, pipe_str)) => {
-                (name.trim().to_string(), Some(pipe::parse(pipe_str.trim())?))
-            }
+        let (name, pipes) = match &var_str.split(PIPE_SEPARATOR).collect::<Vec<&str>>()[..] {
+            [name] => (name.to_string(), vec![]),
+            [name, pipes @ ..] => (
+                name.trim().to_string(),
+                pipes.iter().map(|x| pipe::parse(x.trim())).collect::<Result<Vec<_>>>()?,
+            ),
+            [] => Err(format!("Unexpected variable string: {:?}", var_str))?
         };
 
-        Ok((name, |val: &RonValue| match pipe {
-            None => Ok(val.clone()),
-            Some(pipe) => pipe.apply(val),
+        Ok((name, move |val: &RonValue| {
+            pipes.iter().try_fold(val.clone(), |res, pipe| { pipe.apply(&res) })
         }))
     }
 }
@@ -409,6 +410,27 @@ mod tests {
         let result = parser.result().unwrap();
 
         assert_eq!(result, "<div>54321</div>");
+    }
+
+    #[test]
+    fn parser_should_handle_template_variable_with_two_reverse_pipes() {
+        let template = "\
+<div>{{ name | $reverse | $reverse }}</div>\
+"
+        .to_string();
+
+        let variables = "
+{
+    name: 12345
+}
+"
+        .to_string();
+
+        let mut parser = Parser::__broken_from_string(template, variables).unwrap();
+        parser.run().unwrap();
+        let result = parser.result().unwrap();
+
+        assert_eq!(result, "<div>12345</div>");
     }
 
     #[test]
