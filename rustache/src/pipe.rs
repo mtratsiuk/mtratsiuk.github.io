@@ -1,6 +1,7 @@
+use once_cell::sync::Lazy;
 use std::error::Error;
 use std::fmt::Debug;
-use std::ops::{RangeBounds};
+use std::ops::RangeBounds;
 use std::result;
 
 use crate::ron::Value;
@@ -54,10 +55,8 @@ pub struct SortPipe {
 
 impl Pipe for SortPipe {
     fn from_string(params: String) -> Result<Self> {
-        let sort_expr_parser = create_expr_parser();
-
-        match sort_expr_parser(&mut ParserState::from_string(&params)) {
-            ParserResult::Some(Expr::Call(op, args)) => match &args[..] {
+        match Expr::from_string(&params) {
+            Ok(Expr::Call(op, args)) => match &args[..] {
                 [Expr::Id(left), Expr::Id(right)] => {
                     let (left, right) = (
                         left.clone()
@@ -82,8 +81,7 @@ impl Pipe for SortPipe {
                     args.len()
                 ))?,
             },
-            ParserResult::Err(err) => Err(format!("Can't parse $sort expression {:?}", err))?,
-            ParserResult::None => Err(format!("Can't parse $sort expression"))?,
+            Err(err) => Err(format!("Can't parse $sort expression {:?}", err))?,
             _ => Err(format!("Unexpected $sort expression type"))?,
         }
     }
@@ -102,7 +100,7 @@ impl Pipe for SortPipe {
                     }
 
                     match self.op {
-                        Op::Sub => u32::from_str_radix(&l_value, 10)
+                        Op::IntCmp => u32::from_str_radix(&l_value, 10)
                             .unwrap()
                             .cmp(&u32::from_str_radix(&r_value, 10).unwrap()),
                         Op::StrCmp => l_value.cmp(&r_value),
@@ -162,21 +160,16 @@ impl ParserState {
     }
 }
 
-#[allow(dead_code)]
-enum ParserResult<T> {
-    Some(T),
-    None,
-    Err(Box<dyn Error>),
-}
-
-type PR<T> = ParserResult<T>;
+type PR<T> = Result<Option<T>>;
 
 #[derive(Debug, PartialEq, Eq)]
 enum Op {
-    Sub,
+    IntCmp,
     StrCmp,
     Unknown,
 }
+
+type Parser<T> = Box<dyn Fn(&mut PS) -> PR<T> + Sync + Send>;
 
 #[derive(Debug, PartialEq, Eq)]
 enum Expr {
@@ -184,140 +177,31 @@ enum Expr {
     Call(Op, Vec<Expr>),
 }
 
-fn parser_byte_ranges(
-    ranges: Vec<impl RangeBounds<u8> + 'static>,
-) -> Box<dyn Fn(&mut PS) -> PR<u8>> {
-    Box::new(move |state| {
-        if state.is_at_end() {
-            return ParserResult::None;
-        }
-
-        let char = state.peek();
-
-        if ranges.iter().any(|range| range.contains(&char)) {
-            state.advance();
-            ParserResult::Some(char)
-        } else {
-            ParserResult::None
-        }
-    })
-}
-
-fn parser_byte(ch: u8) -> Box<dyn Fn(&mut PS) -> PR<u8>> {
-    parser_byte_ranges(vec![(ch..=ch)])
-}
-
-fn parser_seq<T, P>(parsers: Vec<P>) -> Box<dyn Fn(&mut PS) -> PR<Vec<T>>>
-where
-    P: Fn(&mut PS) -> PR<T> + 'static,
-{
-    Box::new(move |state| {
-        let initial_pos = state.pos;
-        let mut result: Vec<T> = vec![];
-
-        for parser in &parsers {
-            match parser(state) {
-                ParserResult::Some(r) => {
-                    result.push(r);
-                }
-                ParserResult::None => {
-                    state.pos = initial_pos;
-                    return ParserResult::None;
-                }
-                ParserResult::Err(err) => {
-                    return ParserResult::Err(err);
-                }
-            }
-        }
-
-        ParserResult::Some(result)
-    })
-}
-
-fn parser_or<T, P>(parsers: Vec<P>) -> Box<dyn Fn(&mut PS) -> PR<T>>
-where
-    P: Fn(&mut PS) -> PR<T> + 'static,
-{
-    Box::new(move |state| {
-        let initial_pos = state.pos;
-
-        for parser in &parsers {
-            match parser(state) {
-                ParserResult::Some(r) => {
-                    return ParserResult::Some(r);
-                }
-                ParserResult::None => {
-                    state.pos = initial_pos;
-                }
-                ParserResult::Err(err) => {
-                    return ParserResult::Err(err);
-                }
-            }
-        }
-
-        ParserResult::None
-    })
-}
-
-fn parser_many<T, P>(parser: P) -> Box<dyn Fn(&mut PS) -> PR<Vec<T>>>
-where
-    P: Fn(&mut PS) -> PR<T> + 'static,
-{
-    Box::new(move |state| {
-        let mut results = vec![];
-
-        loop {
-            let initial_pos = state.pos;
-
-            match parser(state) {
-                ParserResult::Some(r) => {
-                    results.push(r);
-                }
-                ParserResult::None => {
-                    state.pos = initial_pos;
-                    break;
-                }
-                ParserResult::Err(err) => {
-                    return ParserResult::Err(err);
-                }
-            }
-        }
-
-        ParserResult::Some(results)
-    })
-}
-
-fn parser_map<T, F, P, R>(parser: P, map: F) -> Box<dyn Fn(&mut PS) -> PR<R>>
-where
-    F: Fn(T) -> R + 'static,
-    P: Fn(&mut PS) -> PR<T> + 'static,
-{
-    Box::new(move |state| match parser(state) {
-        ParserResult::Some(r) => ParserResult::Some(map(r)),
-        ParserResult::None => ParserResult::None,
-        ParserResult::Err(err) => ParserResult::Err(err),
-    })
-}
-
 macro_rules! try_parse(
     ($e:expr) => ({
         match $e {
-            ParserResult::Some(x) => x,
-            ParserResult::None => {
-                return ParserResult::None;
+            Ok(Some(x)) => x,
+            Ok(None) => {
+                return Ok(None);
             },
-            ParserResult::Err(err) => {
-                return ParserResult::Err(err);
+            Err(err) => {
+                return Err(err);
             },
         }
     });
 );
 
-fn create_expr_parser() -> Box<dyn Fn(&mut PS) -> PR<Expr>> {
+static EXPR_PARSER: Lazy<Parser<Expr>> = Lazy::new(|| {
     let call_open = parser_byte(b'(');
     let call_close = parser_byte(b')');
     let space = parser_byte(b' ');
-    let op_sub = parser_seq("$sub".as_bytes().iter().map(|x| parser_byte(*x)).collect());
+    let op_sub = parser_seq(
+        "$int_cmp"
+            .as_bytes()
+            .iter()
+            .map(|x| parser_byte(*x))
+            .collect(),
+    );
     let op_str_cmp = parser_seq(
         "$str_cmp"
             .as_bytes()
@@ -331,16 +215,19 @@ fn create_expr_parser() -> Box<dyn Fn(&mut PS) -> PR<Expr>> {
         parser_byte(b'_'),
         parser_byte(b'.'),
     ]));
-    let op = parser_map(
-        parser_or(vec![op_sub, op_str_cmp]),
-        |x| match &String::from_utf8(x).unwrap()[..] {
-            "$sub" => Op::Sub,
-            "$str_cmp" => Op::StrCmp,
-            _ => Op::Unknown,
-        },
-    );
+    let op = parser_map(parser_or(vec![op_sub, op_str_cmp]), |x| {
+        if let Ok(op_str) = String::from_utf8(x) {
+            match op_str.as_str() {
+                "$int_cmp" => Op::IntCmp,
+                "$str_cmp" => Op::StrCmp,
+                _ => Op::Unknown,
+            }
+        } else {
+            Op::Unknown
+        }
+    });
 
-    let expression = move |state: &mut ParserState| -> ParserResult<Expr> {
+    let expression = move |state: &mut ParserState| -> PR<Expr> {
         try_parse!(call_open(state));
         let operation = try_parse!(op(state));
         try_parse!(space(state));
@@ -349,22 +236,146 @@ fn create_expr_parser() -> Box<dyn Fn(&mut PS) -> PR<Expr>> {
         let right = try_parse!(id(state));
         try_parse!(call_close(state));
 
-        ParserResult::Some(Expr::Call(
+        Ok(Some(Expr::Call(
             operation,
             vec![
-                Expr::Id(String::from_utf8(left).unwrap()),
-                Expr::Id(String::from_utf8(right).unwrap()),
+                Expr::Id(String::from_utf8(left)?),
+                Expr::Id(String::from_utf8(right)?),
             ],
-        ))
+        )))
     };
 
     Box::new(expression)
+});
+
+impl Expr {
+    fn from_string(value: &str) -> Result<Self> {
+        let mut state = PS::from_string(value);
+
+        match EXPR_PARSER(&mut state)? {
+            Some(expr) => Ok(expr),
+            None => Err("Failed to parse expression")?,
+        }
+    }
+}
+
+fn parser_byte_ranges(ranges: Vec<impl RangeBounds<u8> + 'static + Sync + Send>) -> Parser<u8> {
+    Box::new(move |state| {
+        if state.is_at_end() {
+            return Ok(None);
+        }
+
+        let char = state.peek();
+
+        if ranges.iter().any(|range| range.contains(&char)) {
+            state.advance();
+            Ok(Some(char))
+        } else {
+            Ok(None)
+        }
+    })
+}
+
+fn parser_byte(ch: u8) -> Parser<u8> {
+    parser_byte_ranges(vec![(ch..=ch)])
+}
+
+fn parser_seq<T, P>(parsers: Vec<P>) -> Parser<Vec<T>>
+where
+    P: Fn(&mut PS) -> PR<T> + 'static + Sync + Send,
+{
+    Box::new(move |state| {
+        let initial_pos = state.pos;
+        let mut result: Vec<T> = vec![];
+
+        for parser in &parsers {
+            match parser(state) {
+                Ok(Some(r)) => {
+                    result.push(r);
+                }
+                Ok(None) => {
+                    state.pos = initial_pos;
+                    return Ok(None);
+                }
+                Err(err) => {
+                    return Err(err);
+                }
+            }
+        }
+
+        Ok(Some(result))
+    })
+}
+
+fn parser_or<T, P>(parsers: Vec<P>) -> Parser<T>
+where
+    P: Fn(&mut PS) -> PR<T> + 'static + Sync + Send,
+{
+    Box::new(move |state| {
+        let initial_pos = state.pos;
+
+        for parser in &parsers {
+            match parser(state) {
+                Ok(Some(r)) => {
+                    return Ok(Some(r));
+                }
+                Ok(None) => {
+                    state.pos = initial_pos;
+                }
+                Err(err) => {
+                    return Err(err);
+                }
+            }
+        }
+
+        Ok(None)
+    })
+}
+
+fn parser_many<T, P>(parser: P) -> Parser<Vec<T>>
+where
+    P: Fn(&mut PS) -> PR<T> + 'static + Sync + Send,
+{
+    Box::new(move |state| {
+        let mut results = vec![];
+
+        loop {
+            let initial_pos = state.pos;
+
+            match parser(state) {
+                Ok(Some(r)) => {
+                    results.push(r);
+                }
+                Ok(None) => {
+                    state.pos = initial_pos;
+                    break;
+                }
+                Err(err) => {
+                    return Err(err);
+                }
+            }
+        }
+
+        Ok(Some(results))
+    })
+}
+
+fn parser_map<T, F, P, R>(parser: P, map: F) -> Parser<R>
+where
+    F: Fn(T) -> R + 'static + Sync + Send,
+    P: Fn(&mut PS) -> PR<T> + 'static + Sync + Send,
+{
+    Box::new(move |state| match parser(state) {
+        Ok(Some(r)) => Ok(Some(map(r))),
+        Ok(None) => Ok(None),
+        Err(err) => Err(err),
+    })
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::ron;
     use super::*;
+    use crate::ron;
 
     #[test]
     fn reverse_pipe_should_reverse_text() {
@@ -382,11 +393,7 @@ mod tests {
 
         let result = parser(&mut state);
 
-        if let ParserResult::Some(v) = result {
-            assert_eq!(v, b'1');
-        } else {
-            assert!(false);
-        }
+        assert_eq!(result.unwrap().unwrap(), b'1');
     }
 
     #[test]
@@ -401,12 +408,8 @@ mod tests {
 
         let result = parser(&mut state);
 
-        if let ParserResult::Some(v) = result {
-            assert_eq!(v, vec![b'1', b'2', b'3', b'4']);
-            assert_eq!(state.pos, 4);
-        } else {
-            assert!(false);
-        }
+        assert_eq!(result.unwrap().unwrap(), vec![b'1', b'2', b'3', b'4']);
+        assert_eq!(state.pos, 4);
     }
 
     #[test]
@@ -420,7 +423,7 @@ mod tests {
 
         let result = parser(&mut state);
 
-        if let ParserResult::None = result {
+        if let Ok(None) = result {
             assert_eq!(state.pos, 0);
         } else {
             assert!(false);
@@ -441,12 +444,8 @@ mod tests {
 
         let result = parser(&mut state);
 
-        if let ParserResult::Some(v) = result {
-            assert_eq!(v, "123".to_string());
-            assert_eq!(state.pos, 3);
-        } else {
-            assert!(false);
-        }
+        assert_eq!(result.unwrap().unwrap(), "123".to_string());
+        assert_eq!(state.pos, 3);
     }
 
     #[test]
@@ -461,40 +460,29 @@ mod tests {
 
         let result = parser(&mut state);
 
-        if let ParserResult::Some(v) = result {
-            assert_eq!(v, b'1');
-            assert_eq!(state.pos, 1);
-        } else {
-            assert!(false);
-        }
+        assert_eq!(result.unwrap().unwrap(), b'1');
+        assert_eq!(state.pos, 1);
     }
 
     #[test]
     fn test_expr() {
-        let mut state = ParserState::from_string("($sub $2.count $1.count)");
-        let parser = create_expr_parser();
+        let result = Expr::from_string("($int_cmp $2.count $1.count)");
 
-        let result = parser(&mut state);
-
-        if let ParserResult::Some(v) = result {
-            assert_eq!(
-                v,
-                Expr::Call(
-                    Op::Sub,
-                    vec![
-                        Expr::Id("$2.count".to_string()),
-                        Expr::Id("$1.count".to_string())
-                    ]
-                )
+        assert_eq!(
+            result.unwrap(),
+            Expr::Call(
+                Op::IntCmp,
+                vec![
+                    Expr::Id("$2.count".to_string()),
+                    Expr::Id("$1.count".to_string())
+                ]
             )
-        } else {
-            assert!(false);
-        }
+        )
     }
 
     #[test]
     fn test_sort_pipe_sub() {
-        let pipe = parse("$sort ($sub $2.count.value $1.count.value)").unwrap();
+        let pipe = parse("$sort ($int_cmp $2.count.value $1.count.value)").unwrap();
 
         let value = ron::parse(
             "\
