@@ -178,7 +178,7 @@
         }
         {
             name: Russian Circles
-            count: 1
+            count: 2
         }
         {
             name: Cult of Luna
@@ -201,6 +201,11 @@
             name: mtratsiuk.github.io
             url: https\://github.com/mtratsiuk/mtratsiuk.github.io
             description: This web page. Rendered with a home-made templating engine and a custom object notation parser written in Rust.
+        }
+        {
+            name: soundations
+            url: https\://github.com/spris-dev/soundations
+            description: Music recommendations project, built with&nbsp;<a class="inline" href="https\://github.com/otratsiuk">@otratsiuk</a>
         }
         {
             name: mt-lang

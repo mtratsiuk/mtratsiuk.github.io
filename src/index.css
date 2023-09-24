@@ -74,6 +74,10 @@ a:active {
     color: var(--active-color);
 }
 
+.inline {
+    display: inline;
+}
+
 .w-100 {
     width: 100%;
 }
@@ -271,7 +275,13 @@ a:active {
 }
 
 .m-switch input {
-    display: none;
+    opacity: 0;
+    position: relative;
+    z-index: -1;
+}
+
+.m-switch:focus-within {
+    outline: 2px solid black;
 }
 
 .m-slider {
@@ -283,6 +293,7 @@ a:active {
     right: 0;
     top: 0;
     transition: .4s;
+    z-index: 1;
 }
 
 .m-slider:before {
