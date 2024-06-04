@@ -49,6 +49,9 @@ html {
     font-size: min(max(calc(1vh + 1vw + 2vmin), 20px), 44.69px);
     color: var(--primary-color);
     background-color: var(--background-color);
+    transition: background-color .1s ease-in,
+        color .1s ease-in,
+        border-color .1s ease-in;
 }
 
 
@@ -220,10 +223,10 @@ a:active {
 }
 
 .c-projects {
-    flex-basis: 40%;
+    flex-basis: 50%;
 }
 
-@media screen and (max-width: 1100px) {
+@media screen and (max-width: 1269px) {
     .c-grid {
         flex-wrap: wrap;
         justify-content: space-between;
@@ -268,142 +271,96 @@ a:active {
     }
 }
 
-.m-switch-container {
-    position: absolute;
-    right: .5rem;
-    top: .5rem;
-}
-
-.m-switch {
-    display: inline-block;
-    height: 0.8rem;
-    position: relative;
-    width: 1.4rem;
-    transform: scale(0.8);
-}
-
-.m-switch input {
-    opacity: 0;
-    position: relative;
-    z-index: -1;
-}
-
-.m-switch:focus-within {
-    outline: 2px solid black;
-}
-
-.m-slider {
-    background-color: var(--active-color);
-    bottom: 0;
+.theme-toggle {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: var(--active-color);
     cursor: pointer;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transition: .4s;
-    z-index: 1;
+
+    &:focus {
+      outline: 2px solid var(--active-color);
+    }
 }
 
-.m-slider:before {
-    background-color: var(--background-color);
-    bottom: 0.09rem;
-    content: "";
-    height: 0.6rem;
-    left: 0.09rem;
-    position: absolute;
-    transition: .4s;
-    width: 0.6rem;
-}
-
-input:not(:checked)+.m-slider {
-    background-color: var(--active-color);
-}
-
-input:checked+.m-slider:before {
-    transform: translateX(0.6rem);
-}
-
-.m-slider.m-round {
-    border-radius: 0.2rem;
-}
-
-.m-slider.m-round:before {
-    border-radius: 0.2rem;
+.theme-toggle-wrapper:active {
+    transform: translate(1px, 1px);
 }
 </style>
   </head>
 
   <body class="p-1 relative">
-    <div class="m-switch-container flex flex-align-center z-index-1">
-        Jedi
-        <label class="m-switch" for="theme-checkbox">
-            <input type="checkbox" id="theme-checkbox" />
-            <div class="m-slider m-round"></div>
-        </label>
-        Sith
-    </div>
 
     <div class="w-100 min-h-100">
-      <main class="flex flex-column flex-align-center z-index-0 min-h-100">
-        <div class="max-width-container mb-biggest flex flex-column flex-justify-center">
-            <div class="mb">
-                <h1 class="mb">Misha Tratsiuk</h1>
-                <div>Misha is a life form born in Belarus, living in the&nbsp;Netherlands.</div>
-                <div>Spends most of his time doing:</div>
-            </div>
+      <main class="flex flex-column z-index-0 min-h-100">
 
-            <div class="fs-smaller mb-bigger">
-            
-                <div class="mb-smaller">
-                💻 Software Engineering  <a href="https://miro.com">@Miro</a> 
+        <div class="flex flex-gap flex-wrap flex-justify-between flex-align-stretch mb-biggest">
+            <div class="flex-grow border p-smaller flex flex-column flex-justify-center">
+                <div class="mb">
+                    <h1 class="mb">Misha Tratsiuk</h1>
+                    <div>Misha is a life form born in Belarus, living in the&nbsp;Netherlands.</div>
+                    <div>Spends most of his time doing:</div>
+                </div>
 
+                <div class="fs-smaller mb-bigger">
                 
-                    (formerly:
+                    <div class="mb-smaller">
+                    💻 Software Engineering  <a href="https://miro.com">@Miro</a> 
+
                     
-                        <a href="https://hcaptcha.com">@hCaptcha</a><!--
-                    -->
-                        <a href="https://www.godeltech.com/">@Godel</a><!--
-                    -->
-                        <a href="https://www.epam.com/">@Epam</a><!--
-                    --><!--
-                    -->)
+                        (formerly:
+                        
+                            <a href="https://hcaptcha.com">@hCaptcha</a><!--
+                        -->
+                            <a href="https://www.godeltech.com/">@Godel</a><!--
+                        -->
+                            <a href="https://www.epam.com/">@Epam</a><!--
+                        --><!--
+                        -->)
+                    
+                    </div>
                 
-                </div>
-            
-                <div class="mb-smaller">
-                🏊‍♂️ Swimming  <a href="https://swimgym.nl">@SwimGym</a> 
+                    <div class="mb-smaller">
+                    🏊‍♂️ Swimming  <a href="https://swimgym.nl">@SwimGym</a> 
 
+                    
+                    </div>
                 
-                </div>
-            
-                <div class="mb-smaller">
-                🤘 Visiting music live shows 
+                    <div class="mb-smaller">
+                    🤘 Visiting music live shows 
 
+                    
+                    </div>
                 
-                </div>
-            
-                <div class="mb-smaller">
-                🎸 Practicing bass guitar once in a while 
+                    <div class="mb-smaller">
+                    🎸 Practicing bass guitar once in a while 
 
+                    
+                    </div>
                 
                 </div>
-            
+
+                <div class="flex flex-wrap flex-gap flex-justify-around">
+                
+                    <a href="https://misha.spris.dev/blog/">blog</a>
+                
+                    <a href="https://github.com/mtratsiuk">github</a>
+                
+                    <a href="https://www.linkedin.com/in/mtratsiuk">linkedin</a>
+                
+                    <a href="https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=5481048">swimrankings</a>
+                
+                    <a href="https://www.instagram.com/mtrtsk">instagram</a>
+                
+                </div>
             </div>
 
-            <div class="max-width-container flex flex-wrap flex-gap flex-justify-around">
-              
-                <a href="https://github.com/mtratsiuk">github</a>
-              
-                <a href="https://www.linkedin.com/in/mtratsiuk">linkedin</a>
-              
-                <a href="https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=5481048">swimrankings</a>
-              
-                <a href="https://www.instagram.com/mtrtsk">instagram</a>
-              
+            <div class="flex flex-grow theme-toggle-wrapper">
+                <button id="theme-toggle" class="w-100 h-100 border p-smaller theme-toggle">jedi</button>
             </div>
         </div>
 
-        <div class="c-grid flex-grow flex flex-justify-around flex-align-stretch">
+        <div class="c-grid flex-grow flex flex-justify-between flex-align-stretch">
             <div class="c-projects border p-smaller">
                 <h1 class="mb">💻 Projects</h1>
                 
@@ -413,13 +370,23 @@ input:checked+.m-slider:before {
                     </div>
                 
                     <div class="mb">
+                        <a href="https://github.com/mtratsiuk/b3">b3</a> 
+                        <div class="fs-smaller">Boring blog builder - simple static site (blog) generator tool written in Go.</div>
+                    </div>
+                
+                    <div class="mb">
                         <a href="https://github.com/spris-dev/soundations">soundations</a> 
                         <div class="fs-smaller">Music recommendations project, built with&nbsp;<a class="inline" href="https://github.com/otratsiuk">@otratsiuk</a></div>
                     </div>
                 
                     <div class="mb">
+                        <a href="https://github.com/mtratsiuk/battleship">battleship</a> 
+                        <div class="fs-smaller">Battleship simulator project, built as a JVM / Spring warm up exercise.</div>
+                    </div>
+                
+                    <div class="mb">
                         <a href="https://github.com/mtratsiuk/mt-lang">mt-lang</a> 
-                        <div class="fs-smaller">Toy compile-to-js programming language with a lisp-like syntax, built as a result of Parser Combinators technique exploration.</div>
+                        <div class="fs-smaller">Toy compile-to-js programming language with a lisp-like syntax, built during parser combinators technique exploration.</div>
                     </div>
                 
                     <div class="mb">
@@ -461,6 +428,8 @@ input:checked+.m-slider:before {
                 
                     <div class="fs-smaller">Russian Circles: <b>2</b></div>
                 
+                    <div class="fs-smaller">Tool: <b>2</b></div>
+                
                     <div class="fs-smaller">Amon Amarth: <b>1</b></div>
                 
                     <div class="fs-smaller">Behemoth: <b>1</b></div>
@@ -499,8 +468,6 @@ input:checked+.m-slider:before {
                 
                     <div class="fs-smaller">Steel Panther: <b>1</b></div>
                 
-                    <div class="fs-smaller">Tool: <b>1</b></div>
-                
             </div>
         </div>
 
@@ -510,12 +477,49 @@ input:checked+.m-slider:before {
   <script>
 (function () {
     var DARK_THEME_CLASSNAME = "dark";
+    var THEME_STORAGE_KEY = "b3-theme"
+    var THEMES = {
+        JEDI: "jedi",
+        SITH: "sith",
+    }
 
-    var themeToggle = document.getElementById("theme-checkbox");
+    var state = tryExec(function () {
+        return window.localStorage.getItem(THEME_STORAGE_KEY)
+    }, THEMES.JEDI)
 
-    themeToggle.addEventListener('change', function () {
-        document.documentElement.classList.toggle(DARK_THEME_CLASSNAME);
-    });
+    if (state === THEMES.SITH && !document.documentElement.classList.contains(DARK_THEME_CLASSNAME)) {
+        document.documentElement.classList.add(DARK_THEME_CLASSNAME);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var themeToggle = document.getElementById("theme-toggle");
+
+        if (state === THEMES.SITH && themeToggle.textContent !== THEMES.SITH) {
+            themeToggle.textContent = THEMES.SITH
+        }
+
+        themeToggle.addEventListener("click", function () {
+            if (state === THEMES.JEDI) {
+                state = THEMES.SITH
+                document.documentElement.classList.add(DARK_THEME_CLASSNAME);
+            } else {
+                state = THEMES.JEDI
+                document.documentElement.classList.remove(DARK_THEME_CLASSNAME);
+            }
+
+            themeToggle.textContent = state
+            tryExec(function () { window.localStorage.setItem(THEME_STORAGE_KEY, state) })
+        });
+    })
+
+    function tryExec(fn, fallback) {
+        try {
+            return fn() || fallback
+        } catch (err) {
+            console.warn(err)
+            return fallback
+        }
+    }
 })();
 </script>
   </body>
