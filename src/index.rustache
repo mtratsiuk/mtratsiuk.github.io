@@ -6,51 +6,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   {> css <}
+  {> js <}
   </head>
 
   <body class="p-1 relative">
-    <div class="m-switch-container flex flex-align-center z-index-1">
-        Jedi
-        <label class="m-switch" for="theme-checkbox">
-            <input type="checkbox" id="theme-checkbox" />
-            <div class="m-slider m-round"></div>
-        </label>
-        Sith
-    </div>
 
     <div class="w-100 min-h-100">
-      <main class="flex flex-column flex-align-center z-index-0 min-h-100">
-        <div class="max-width-container mb-biggest flex flex-column flex-justify-center">
-            <div class="mb">
-                <h1 class="mb">{{ name }}</h1>
-                <div>{{ intro_line_0 }}</div>
-                <div>{{ intro_line_1 }}</div>
-            </div>
+      <main class="flex flex-column z-index-0 min-h-100">
 
-            <div class="fs-smaller mb-bigger">
-            {* occupations *}
-                <div class="mb-smaller">
-                {{ $it.area }} {? $it.name ?} <a href="{{ $it.url }}">@{{ $it.name }}</a> {}
+        <div class="flex flex-gap flex-wrap flex-justify-between flex-align-stretch mb-biggest">
+            <div class="flex-grow border p-smaller flex flex-column flex-justify-center">
+                <div class="mb">
+                    <h1 class="mb">{{ name }}</h1>
+                    <div>{{ intro_line_0 }}</div>
+                    <div>{{ intro_line_1 }}</div>
+                </div>
 
-                {? $it.formerly ?}
-                    (formerly:
-                    {* $it.formerly *}
-                        <a href="{{ $it.url }}">@{{ $it.name }}</a><!--
-                    -->{}<!--
-                    -->)
+                <div class="fs-smaller mb-bigger">
+                {* occupations *}
+                    <div class="mb-smaller">
+                    {{ $it.area }} {? $it.name ?} <a href="{{ $it.url }}">@{{ $it.name }}</a> {}
+
+                    {? $it.formerly ?}
+                        (formerly:
+                        {* $it.formerly *}
+                            <a href="{{ $it.url }}">@{{ $it.name }}</a><!--
+                        -->{}<!--
+                        -->)
+                    {}
+                    </div>
                 {}
                 </div>
-            {}
+
+                <div class="flex flex-wrap flex-gap flex-justify-around">
+                {* links *}
+                    <a href="{{ $it.url }}">{{ $it.name }}</a>
+                {}
+                </div>
             </div>
 
-            <div class="max-width-container flex flex-wrap flex-gap flex-justify-around">
-              {* links *}
-                <a href="{{ $it.url }}">{{ $it.name }}</a>
-              {}
+            <div class="flex flex-grow theme-toggle-wrapper">
+                <button id="theme-toggle" class="w-100 h-100 border p-smaller theme-toggle">jedi</button>
             </div>
         </div>
 
-        <div class="c-grid flex-grow flex flex-justify-around flex-align-stretch">
+        <div class="c-grid flex-grow flex flex-justify-between flex-align-stretch">
             <div class="c-projects border p-smaller">
                 <h1 class="mb">{{ projects_title }}</h1>
                 {* projects *}
@@ -79,7 +79,6 @@
       </main>
     </div>
 
-  {> js <}
   </body>
 
 </html>
