@@ -39,6 +39,10 @@
 
     links: [
         {
+            name: blog
+            url: https\://misha.spris.dev/blog/
+        }
+        {
             name: github
             url: https\://github.com/mtratsiuk
         }
@@ -158,7 +162,7 @@
         }
         {
             name: Tool
-            count: 1
+            count: 2
         }
         {
             name: Dream Theater
@@ -203,14 +207,24 @@
             description: This web page. Rendered with a home-made templating engine and a custom object notation parser written in Rust.
         }
         {
+            name: b3
+            url: https\://github.com/mtratsiuk/b3
+            description: Boring blog builder - simple static site (blog) generator tool written in Go.
+        }
+        {
             name: soundations
             url: https\://github.com/spris-dev/soundations
             description: Music recommendations project, built with&nbsp;<a class="inline" href="https\://github.com/otratsiuk">@otratsiuk</a>
         }
         {
+            name: battleship
+            url: https\://github.com/mtratsiuk/battleship
+            description: Battleship simulator project, built as a JVM / Spring warm up exercise.
+        }
+        {
             name: mt-lang
             url: https\://github.com/mtratsiuk/mt-lang
-            description: Toy compile-to-js programming language with a lisp-like syntax, built as a result of Parser Combinators technique exploration.
+            description: Toy compile-to-js programming language with a lisp-like syntax, built during parser combinators technique exploration.
         }
         {
             name: mg-app
