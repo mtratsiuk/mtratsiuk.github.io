@@ -166,7 +166,7 @@
         }
         {
             name: Dream Theater
-            count: 1
+            count: 2
         }
         {
             name: Mastodon
@@ -194,6 +194,18 @@
         }
         {
             name: Gojira
+            count: 1
+        }
+        {
+            name: Molchat Doma
+            count: 1
+        }
+        {
+            name: Master Boot Record
+            count: 1
+        }
+        {
+            name: Juan Luis Guerra
             count: 1
         }
     ]
