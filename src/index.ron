@@ -47,16 +47,16 @@
             url: https\://github.com/mtratsiuk
         }
         {
+            name: youtube
+            url: https\://www.youtube.com/@mishtred
+        }
+        {
             name: linkedin
             url: https\://www.linkedin.com/in/mtratsiuk
         }
         {
             name: swimrankings
             url: https\://www.swimrankings.net/index.php?page=athleteDetail&athleteId=5481048
-        }
-        {
-            name: instagram
-            url: https\://www.instagram.com/mtrtsk
         }
     ]
 
@@ -213,6 +213,11 @@
     projects_title: 💻 Projects
 
     projects: [
+        {
+            name: ranger2 (youtube)
+            url: https\://www.youtube.com/playlist?list=PLIuDQ16oLqqYN3-8fvQbsDN4Vs2kLrmQK
+            description: Isometric no-engine game development with Raylib & Go
+        }
         {
             name: mtratsiuk.github.io
             url: https\://github.com/mtratsiuk/mtratsiuk.github.io
