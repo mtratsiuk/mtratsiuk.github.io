@@ -208,6 +208,14 @@
             name: Juan Luis Guerra
             count: 1
         }
+        {
+            name: Trivium
+            count: 1
+        }
+        {
+            name: BFMV
+            count: 1
+        }
     ]
 
     projects_title: 💻 Projects
