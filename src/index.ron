@@ -94,7 +94,7 @@
     gigs: [
         {
             name: Enter Shikari
-            count: 5
+            count: 6
         }
         {
             name: Arch Enemy
@@ -106,7 +106,7 @@
         }
         {
             name: Megadeth
-            count: 3
+            count: 4
         }
         {
             name: Judas Priest
@@ -169,6 +169,10 @@
             count: 2
         }
         {
+            name: Disturbed
+            count: 1
+        }
+        {
             name: Mastodon
             count: 1
         }
@@ -206,7 +210,7 @@
         }
         {
             name: Juan Luis Guerra
-            count: 1
+            count: 2
         }
         {
             name: Trivium
