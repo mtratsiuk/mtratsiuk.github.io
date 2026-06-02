@@ -11,8 +11,10 @@ pub type Result<T> = result::Result<T, Box<dyn Error>>;
 
 type TemplatePair = (u8, u8);
 
-const TEMPLATE_NAME: &str = "index.rustache";
-const VARIABLES_NAME: &str = "index.ron";
+const TEMPLATE_NAME: &str = "index.mishtache";
+const TEMPLATE_NAME_RS: &str = "index.rustache";
+const VARIABLES_NAME: &str = "index.mishon";
+const VARIABLES_NAME_RS: &str = "index.ron";
 const CSS_NAME: &str = "index.css";
 const JS_NAME: &str = "index.js";
 const LOOP_ITEM_VARIABLE: &str = "$it";
@@ -52,9 +54,14 @@ struct Parser<'a> {
 impl<'a> Parser<'a> {
     fn from(input: &'a Path) -> Result<Self> {
         let template_path = input.join(TEMPLATE_NAME);
-        let template = fs::read_to_string(&template_path)?;
+        let template_path_rs = input.join(TEMPLATE_NAME_RS);
+        let template = fs::read_to_string(&template_path)
+            .or_else(|_| fs::read_to_string(&template_path_rs))?;
+
         let variables_path = input.join(VARIABLES_NAME);
-        let variables_string = fs::read_to_string(&variables_path)?;
+        let variables_path_rs = input.join(VARIABLES_NAME_RS);
+        let variables_string = fs::read_to_string(&variables_path)
+            .or_else(|_| fs::read_to_string(&variables_path_rs))?;
 
         let variables = ron::parse(variables_string)?;
 
@@ -355,13 +362,18 @@ impl<'a> Parser<'a> {
             [name] => (name.to_string(), vec![]),
             [name, pipes @ ..] => (
                 name.trim().to_string(),
-                pipes.iter().map(|x| pipe::parse(x.trim())).collect::<Result<Vec<_>>>()?,
+                pipes
+                    .iter()
+                    .map(|x| pipe::parse(x.trim()))
+                    .collect::<Result<Vec<_>>>()?,
             ),
-            [] => Err(format!("Unexpected variable string: {:?}", var_str))?
+            [] => Err(format!("Unexpected variable string: {:?}", var_str))?,
         };
 
         Ok((name, move |val: &RonValue| {
-            pipes.iter().try_fold(val.clone(), |res, pipe| { pipe.apply(&res) })
+            pipes
+                .iter()
+                .try_fold(val.clone(), |res, pipe| pipe.apply(&res))
         }))
     }
 }
