@@ -1,0 +1,265 @@
+{
+    name: mishtred
+
+    intro_line_0: Misha is a life form born in Belarus, living in the&nbsp;Netherlands.
+    intro_line_1: Spends most of his time doing\:
+
+    occupations: [
+        {
+            area: 💻 Software Engineering
+            name: Miro
+            url: https\://miro.com
+            formerly: [
+                {
+                    name: hCaptcha
+                    url: https\://hcaptcha.com
+                }
+                {
+                    name: Godel
+                    url: https\://www.godeltech.com/
+                }
+                {
+                    name: Epam
+                    url: https\://www.epam.com/
+                }
+            ]
+        }
+        {
+            area: 🏊‍♂️ Swimming
+            name: SwimGym
+            url: https\://swimgym.nl
+        }
+        {
+            area: 🤘 Visiting music live shows
+        }
+        {
+            area: 🎸 Practicing bass guitar once in a while
+        }
+    ]
+
+    links: [
+        {
+            name: blog
+            url: https\://misha.spris.dev/blog/
+        }
+        {
+            name: github
+            url: https\://github.com/mtratsiuk
+        }
+        {
+            name: youtube
+            url: https\://www.youtube.com/@mishtred
+        }
+        {
+            name: linkedin
+            url: https\://www.linkedin.com/in/mtratsiuk
+        }
+        {
+            name: swimrankings
+            url: https\://www.swimrankings.net/index.php?page=athleteDetail&athleteId=5481048
+        }
+    ]
+
+    swim_pbs_title: 🏊‍♂️ Swimming Personal Bests
+
+    swim_pbs: [
+        {
+            distance: 50 freestyle
+            time: 00\:27.78
+        }
+        {
+            distance: 100 freestyle
+            time: 01\:08.67
+        }
+        {
+            distance: 50 backstroke
+            time: 00\:36.00
+        }
+        {
+            distance: 50 breaststroke
+            time: 00\:35.31
+        }
+        {
+            distance: 50 butterfly
+            time: 00\:32.06
+        }
+        {
+            distance: 200 medley
+            time: 02\:59.03
+        }
+    ]
+
+    gigs_title: 🤘 Gigs Counter
+
+    gigs: [
+        {
+            name: Enter Shikari
+            count: 6
+        }
+        {
+            name: Arch Enemy
+            count: 3
+        }
+        {
+            name: Devin Townsend
+            count: 2
+        }
+        {
+            name: Megadeth
+            count: 4
+        }
+        {
+            name: Judas Priest
+            count: 2
+        }
+        {
+            name: Amon Amarth
+            count: 1
+        }
+        {
+            name: Behemoth
+            count: 1
+        }
+        {
+            name: Carcass
+            count: 1
+        }
+        {
+            name: Children of Bodom
+            count: 1
+        }
+        {
+            name: Powerwolf
+            count: 1
+        }
+        {
+            name: Machine Head
+            count: 1
+        }
+        {
+            name: Manowar
+            count: 1
+        }
+        {
+            name: Municipal Waste
+            count: 1
+        }
+        {
+            name: Kreator
+            count: 1
+        }
+        {
+            name: Lamb of God
+            count: 1
+        }
+        {
+            name: Opeth
+            count: 1
+        }
+        {
+            name: Ghost
+            count: 1
+        }
+        {
+            name: Tool
+            count: 2
+        }
+        {
+            name: Dream Theater
+            count: 2
+        }
+        {
+            name: Disturbed
+            count: 1
+        }
+        {
+            name: Mastodon
+            count: 1
+        }
+        {
+            name: FFDP
+            count: 1
+        }
+        {
+            name: Steel Panther
+            count: 1
+        }
+        {
+            name: Russian Circles
+            count: 2
+        }
+        {
+            name: Cult of Luna
+            count: 1
+        }
+        {
+            name: Overkill
+            count: 1
+        }
+        {
+            name: Gojira
+            count: 1
+        }
+        {
+            name: Molchat Doma
+            count: 1
+        }
+        {
+            name: Master Boot Record
+            count: 1
+        }
+        {
+            name: Juan Luis Guerra
+            count: 2
+        }
+        {
+            name: Trivium
+            count: 1
+        }
+        {
+            name: BFMV
+            count: 1
+        }
+    ]
+
+    projects_title: 💻 Projects
+
+    projects: [
+        {
+            name: ranger2 (youtube)
+            url: https\://www.youtube.com/playlist?list=PLIuDQ16oLqqYN3-8fvQbsDN4Vs2kLrmQK
+            description: Isometric no-engine game development with Raylib & Go
+        }
+        {
+            name: mtratsiuk.github.io
+            url: https\://github.com/mtratsiuk/mtratsiuk.github.io
+            description: This web page. Rendered with a home-made templating engine and a custom object notation parser written in Rust.
+        }
+        {
+            name: b3
+            url: https\://github.com/mtratsiuk/b3
+            description: Boring blog builder - simple static site (blog) generator tool written in Go.
+        }
+        {
+            name: soundations
+            url: https\://github.com/spris-dev/soundations
+            description: Music recommendations project, built with&nbsp;<a class="inline" href="https\://github.com/otratsiuk">@otratsiuk</a>
+        }
+        {
+            name: battleship
+            url: https\://github.com/mtratsiuk/battleship
+            description: Battleship simulator project, built as a JVM / Spring warm up exercise.
+        }
+        {
+            name: mt-lang
+            url: https\://github.com/mtratsiuk/mt-lang
+            description: Toy compile-to-js programming language with a lisp-like syntax, built during parser combinators technique exploration.
+        }
+        {
+            name: mg-app
+            url: https\://misha.spris.dev/archive/
+            source: https\://github.com/mtratsiuk/archive/tree/master/Machine%20Graphics/src
+            description: Computer Graphics sandbox with basic 2D rendering tools, built back in university days.
+        }
+    ]
+}

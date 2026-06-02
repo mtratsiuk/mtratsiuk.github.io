@@ -1,0 +1,6 @@
+
+<div>
+  {* items | $sort ($str_cmp $1 $2) *}
+    <div>{{ $it }}</div>
+  {}
+</div>

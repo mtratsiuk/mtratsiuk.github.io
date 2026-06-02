@@ -1,0 +1,6 @@
+
+<div>
+  {* items | $reverse *}
+    <div>{{ $it }}</div>
+  {}
+</div>
